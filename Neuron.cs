@@ -14,7 +14,7 @@ public abstract class Neuron
     public IList<decimal> Weights { get; init; }
     public IList<decimal> Inputs { get; set; } = new List<decimal>();
 
-    public decimal Bias { get; init; }
+    public decimal Bias { get; init; } = 0;
     public decimal ExpectedOutput { get; set; }
     protected abstract decimal ActivationFunction(decimal x);
 
