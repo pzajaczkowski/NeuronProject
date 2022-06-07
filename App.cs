@@ -11,9 +11,15 @@ public class App
         _neuron = neuron;
     }
 
+    public int Iteration { get; private set; }
+
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
 
+    public void Initialize()
+    {
+        Iteration = 0;
+    }
 
     public void AddData(Data data)
     {
@@ -27,6 +33,11 @@ public class App
             throw new Exception("Neuron allows only 1 or 0 as output");
 
         _data.Add(data);
+    }
+
+    public bool RemoveData(Data data)
+    {
+        return _data.Remove(data);
     }
 
     public void Calculate()
@@ -66,5 +77,7 @@ public class App
 
             _neuron.Learn();
         }
+
+        Iteration++;
     }
 }
