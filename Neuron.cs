@@ -1,18 +1,23 @@
 ﻿namespace NeuronProject;
 
-internal abstract class Neuron
+public abstract class Neuron
 {
-    public IList<decimal> Weights { get; init; } = new List<decimal>();
+    protected Neuron()
+    {
+        var random = new Random();
+
+        Weights = new List<decimal>();
+        Weights.Add(new decimal(random.NextDouble()));
+        Weights.Add(new decimal(random.NextDouble()));
+    }
+
+    public IList<decimal> Weights { get; init; }
     public IList<decimal> Inputs { get; set; } = new List<decimal>();
+
     public decimal Bias { get; init; }
     public decimal ExpectedOutput { get; set; }
     protected abstract decimal ActivationFunction(decimal x);
 
-    /// <summary>
-    ///     Oblicza wyjście neuronu
-    /// </summary>
-    /// <returns> Wyjście neuronu </returns>
-    /// <exception cref="Exception"></exception>
     public virtual decimal Calculate()
     {
         if (Weights.Count != Inputs.Count || !Weights.Any())
