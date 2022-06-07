@@ -9,12 +9,14 @@ public abstract class Neuron
         Weights = new List<decimal>();
         Weights.Add(new decimal(random.NextDouble()));
         Weights.Add(new decimal(random.NextDouble()));
+
+        Bias = new decimal(random.NextDouble());
     }
 
-    public IList<decimal> Weights { get; init; }
+    public IList<decimal> Weights { get; }
     public IList<decimal> Inputs { get; set; } = new List<decimal>();
 
-    public decimal Bias { get; init; } = 0;
+    public decimal Bias { get; protected set; }
     public decimal ExpectedOutput { get; set; }
     protected abstract decimal ActivationFunction(decimal x);
 
