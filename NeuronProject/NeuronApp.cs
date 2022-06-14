@@ -1,19 +1,18 @@
 ﻿namespace NeuronProject;
 
-public class App
+public class NeuronApp
 {
     private readonly List<Data> _data = new();
     private readonly Neuron _neuron;
     private readonly List<Data> _results = new();
 
-    public App(Neuron neuron)
+    public NeuronApp(Neuron neuron)
     {
         _neuron = neuron;
     }
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
-
 
     public void AddData(Data data)
     {
