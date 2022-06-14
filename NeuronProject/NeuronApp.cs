@@ -15,6 +15,7 @@ public class NeuronApp
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
+    public int Iterations { get; private set; }
 
     public void LoadDataFromDataList(List<Data> data)
     {
@@ -77,6 +78,8 @@ public class NeuronApp
 
     public void Learn()
     {
+        Iterations++;
+
         foreach (var data in _data)
         {
             _neuron.Inputs = data.Input;
