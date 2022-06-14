@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.48" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ScottPlot.WPF" Version="4.1.48" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
