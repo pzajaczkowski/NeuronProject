@@ -1,10 +1,12 @@
-﻿namespace NeuronProject;
+﻿using System.Text.Json;
+
+namespace NeuronProject;
 
 public class NeuronApp
 {
-    private readonly List<Data> _data = new();
     private readonly Neuron _neuron;
     private readonly List<Data> _results = new();
+    private List<Data> _data = new();
 
     public NeuronApp(Neuron neuron)
     {
@@ -13,6 +15,23 @@ public class NeuronApp
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
+
+    public void LoadDataFromDataList(List<Data> data)
+    {
+        _data = data;
+    }
+
+    public void LoadDataFromFile(string path)
+    {
+        if (!File.Exists(path))
+            throw new FileNotFoundException();
+
+        var json = File.ReadAllText(path);
+
+        _data.Clear();
+
+        _data = JsonSerializer.Deserialize<List<Data>>(json);
+    }
 
     public void AddData(Data data)
     {
