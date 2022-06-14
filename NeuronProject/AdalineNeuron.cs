@@ -1,6 +1,6 @@
 ﻿namespace NeuronProject;
 
-internal class AdalineNeuron : Neuron
+public class AdalineNeuron : Neuron
 {
     public decimal LearningRate { get; init; } = new(.01);
 
