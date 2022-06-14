@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NeuronInterface.Views"
         mc:Ignorable="d"
+        ResizeMode="CanMinimize"
         Title="DataWindow" Height="450" Width="800">
     <Grid>
-        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,18,10"/>
+        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,125,23"/>
+        <Button x:Name="Save" Content="Zapisz" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="99" Margin="691,10,0,0"/>
+        <Button x:Name="Return" Content="Wróć" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="99" Margin="691,57,0,0"/>
 
     </Grid>
 </Window>
