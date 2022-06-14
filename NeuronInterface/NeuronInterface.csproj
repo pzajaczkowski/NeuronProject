@@ -11,4 +11,12 @@
     <ProjectReference Include="..\NeuronProject\NeuronProject.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.48" />
+  </ItemGroup>
+
 </Project>
