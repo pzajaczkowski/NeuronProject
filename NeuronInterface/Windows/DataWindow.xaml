@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="DataWindow" Height="450" Width="800">
     <Grid>
-        
+        <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,18,10"/>
+
     </Grid>
 </Window>
