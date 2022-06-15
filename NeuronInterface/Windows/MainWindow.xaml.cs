@@ -105,8 +105,8 @@ public partial class MainWindow : Window
     {
         Initialize();
         EnableElements(false);
-        Plot();
         InterfaceApp.Solve();
+        Plot();
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -141,6 +141,17 @@ public partial class MainWindow : Window
             MainPlot.Plot.AddScatter(input1b, input2b, Color.Blue, 0);
         if (input1r.Length == input2r.Length && input1r.Length > 0)
             MainPlot.Plot.AddScatter(input1r, input2r, Color.Red, 0);
+
+        var xs = new double[2];
+        xs[0] = (double)data.Select(x => x.Input).Max(y => y[0]);
+        xs[1] = (double)data.Select(x => x.Input).Min(y => y[0]);
+        var xy = new double[2];
+
+        xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
+        xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
+
+        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green);
+
         MainPlot.Refresh();
     }
 

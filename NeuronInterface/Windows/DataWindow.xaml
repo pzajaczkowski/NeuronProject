@@ -7,13 +7,13 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
-        Title="DataWindow" Height="342" Width="400">
+        Title="DataWindow" Height="397" Width="561">
     <Grid>
         <DataGrid x:Name="DataGrid" PreviewTextInput="NumberValidationTextBox" Margin="10,10,189,45">
         </DataGrid>
-        <Button x:Name="Save" Content="Zapisz" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="120" Margin="246,57,0,0" Click="Save_Click"/>
-        <Button x:Name="Return" Content="Wróć" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="120" Margin="246,104,0,0" Click="Return_Click"/>
-        <Button x:Name="Delete" Content="Usuń" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="120" Margin="246,10,0,0" Click="Delete_Click"/>
+        <Button x:Name="Save" Content="Zapisz" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,57,30,0" Click="Save_Click"/>
+        <Button x:Name="Return" Content="Wróć" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,104,30,0" Click="Return_Click"/>
+        <Button x:Name="Delete" Content="Usuń" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,10,30,0" Click="Delete_Click"/>
 
     </Grid>
 </Window>

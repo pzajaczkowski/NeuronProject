@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NeuronProject;
+using System;
 using System.Collections.Generic;
-using NeuronProject;
 
 namespace NeuronInterface;
 
@@ -94,6 +94,10 @@ public static class InterfaceApp
     public static ulong Iteration => NeuronApp.Iterations;
     public static decimal AvgError => NeuronApp.AvgError();
 
+    public static decimal GetResultLinePoint(decimal x)
+    {
+        return -1 * (NeuronApp.Neuron.Bias + NeuronApp.Neuron.Weights[0] * x) / NeuronApp.Neuron.Weights[1];
+    }
     public static void LoadDataFromDataList(List<Data> data)
     {
         if (State != STATE.Waiting)
@@ -141,7 +145,7 @@ public static class InterfaceApp
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
+
         State = STATE.Stopped;
     }
 
