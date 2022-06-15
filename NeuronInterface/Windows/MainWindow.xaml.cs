@@ -1,4 +1,12 @@
-﻿namespace NeuronInterface.Windows;
+﻿using Microsoft.Win32;
+using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
