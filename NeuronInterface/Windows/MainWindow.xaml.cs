@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace NeuronInterface.Windows;
 
@@ -43,22 +43,22 @@ public partial class MainWindow : Window
         switch (InterfaceApp.Mode)
         {
             case InterfaceApp.MODE.Error:
-                {
-                    if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
-                            CultureInfo.GetCultureInfo("en-US"), out var maxError))
-                        throw new Exception();
+            {
+                if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.GetCultureInfo("en-US"), out var maxError))
+                    throw new Exception();
 
-                    InterfaceApp.MaxError = maxError;
-                    break;
-                }
+                InterfaceApp.MaxError = maxError;
+                break;
+            }
             case InterfaceApp.MODE.Iterations:
-                {
-                    if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
-                        throw new Exception();
+            {
+                if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                    throw new Exception();
 
-                    InterfaceApp.IterationStep = iterationStep;
-                    break;
-                }
+                InterfaceApp.IterationStep = iterationStep;
+                break;
+            }
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -76,17 +76,18 @@ public partial class MainWindow : Window
     {
         var item = (ComboBoxItem)e.AddedItems[0];
 
-        if (item.Content.Equals("Perceptron") && this.LearningRate != null)
+        if (item.Content.Equals("Perceptron") && LearningRate != null)
         {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
-            this.LearningRate.Visibility = Visibility.Hidden;
-            this.LearningRateLabel.Visibility = Visibility.Hidden;
+            LearningRate.Visibility = Visibility.Hidden;
+            LearningRateLabel.Visibility = Visibility.Hidden;
         }
-        if (item.Content.Equals("Adaline") && this.LearningRate != null)
+
+        if (item.Content.Equals("Adaline") && LearningRate != null)
         {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
-            this.LearningRate.Visibility = Visibility.Visible;
-            this.LearningRateLabel.Visibility = Visibility.Visible;
+            LearningRate.Visibility = Visibility.Visible;
+            LearningRateLabel.Visibility = Visibility.Visible;
         }
     }
 
@@ -131,11 +132,11 @@ public partial class MainWindow : Window
     {
         var data = InterfaceApp.GetData();
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
-        var inputsr = data.Where(x => x.Output == -1).Select(x => x.Input);
-        double[] input1b = inputsb.Select(x => (double)x[0]).ToArray();
-        double[] input2b = inputsb.Select(x => (double)x[1]).ToArray();
-        double[] input1r = inputsr.Select(x => (double)x[0]).ToArray();
-        double[] input2r = inputsr.Select(x => (double)x[1]).ToArray();
+        var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
+        var input1b = inputsb.Select(x => (double)x[0]).ToArray();
+        var input2b = inputsb.Select(x => (double)x[1]).ToArray();
+        var input1r = inputsr.Select(x => (double)x[0]).ToArray();
+        var input2r = inputsr.Select(x => (double)x[1]).ToArray();
 
         if (input1b.Length == input2b.Length && input1b.Length > 0)
             MainPlot.Plot.AddScatter(input1b, input2b, Color.Blue, 0);
@@ -157,13 +158,13 @@ public partial class MainWindow : Window
 
     private void EnableElements(bool state)
     {
-        this.LoadData.IsEnabled = state;
-        this.EditData.IsEnabled = state;
-        this.Solve.IsEnabled = state;
-        this.NextStep.IsEnabled = state;
-        this.NeuronType.IsEnabled = state;
-        this.StopCondition.IsEnabled = state;
-        this.Load.IsEnabled = state;
-        this.SaveAndExit.IsEnabled = state;
+        LoadData.IsEnabled = state;
+        EditData.IsEnabled = state;
+        Solve.IsEnabled = state;
+        NextStep.IsEnabled = state;
+        NeuronType.IsEnabled = state;
+        StopCondition.IsEnabled = state;
+        Load.IsEnabled = state;
+        SaveAndExit.IsEnabled = state;
     }
 }
