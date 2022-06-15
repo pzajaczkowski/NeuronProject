@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterScreen"
         Title="NeuronVisualizer" Height="650" Width="1150">
     <Grid>
-        <Button x:Name="LoadData" Content="Wczytaj dane" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
+        <Button x:Name="LoadData" Content="Wczytaj dane" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="LoadData_Click"/>
         <Button x:Name="EditData" Content="Edytuj dane" HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="EditData_Click"/>
         <Button x:Name="Solve" Content="Rozwiąż (auto)" HorizontalAlignment="Left" Margin="20,120,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
         <Button x:Name="StopSolve" Content="Stop" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
@@ -25,7 +25,7 @@
             <ComboBoxItem Content="Ilość iteracji"/>
         </ComboBox>
         <Label x:Name="StopConditionLabel" Content="Warunek Zatrzymania:" HorizontalAlignment="Left" Margin="20,352,0,0" VerticalAlignment="Top" Height="30" Width="131"/>
-        <Button x:Name="ErrorGraph" Content="Wykres Błędu" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,255,0,0"/>
+        <Button x:Name="MainGraph" Content="Wykres Błędu" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,255,0,0"/>
         <Button x:Name="Load" Content="Wczytaj" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,504,0,0"/>
         <Label x:Name="LearningRateLabel" Content="Współczynnik uczenia:" HorizontalAlignment="Left" Margin="20,432,0,0" VerticalAlignment="Top" Height="30" Width="131"/>
         <TextBox x:Name="StopConditionTextBox" HorizontalAlignment="Left" Margin="20,412,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="131" Height="20"/>

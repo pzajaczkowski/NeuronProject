@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NeuronProject;
+using System;
 using System.Collections.Generic;
-using NeuronProject;
 
 namespace NeuronInterface;
 
@@ -92,6 +92,11 @@ public static class InterfaceApp
             throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
 
         NeuronApp.LoadDataFromDataList(data);
+    }
+
+    public static void LoadDataFromFile(string path)
+    {
+        NeuronApp.LoadDataFromFile(path);
     }
 
     public static IList<Data> GetData()
