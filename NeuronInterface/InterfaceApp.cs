@@ -93,4 +93,9 @@ internal class InterfaceApp
 
         NeuronApp.LoadDataFromDataList(data);
     }
+
+    public IList<Data> GetData()
+    {
+        return NeuronApp.Data;
+    }
 }
