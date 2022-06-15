@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -103,6 +105,7 @@ public partial class MainWindow : Window
     {
         Initialize();
         EnableElements(false);
+        Plot();
         InterfaceApp.Solve();
     }
 
@@ -122,6 +125,23 @@ public partial class MainWindow : Window
         Initialize();
 
         InterfaceApp.SolveStep();
+    }
+
+    private void Plot()
+    {
+        var data = InterfaceApp.GetData();
+        var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
+        var inputsr = data.Where(x => x.Output == -1).Select(x => x.Input);
+        double[] input1b = inputsb.Select(x => (double)x[0]).ToArray();
+        double[] input2b = inputsb.Select(x => (double)x[1]).ToArray();
+        double[] input1r = inputsr.Select(x => (double)x[0]).ToArray();
+        double[] input2r = inputsr.Select(x => (double)x[1]).ToArray();
+
+        if (input1b.Length == input2b.Length && input1b.Length > 0)
+            MainPlot.Plot.AddScatter(input1b, input2b, Color.Blue, 0);
+        if (input1r.Length == input2r.Length && input1r.Length > 0)
+            MainPlot.Plot.AddScatter(input1r, input2r, Color.Red, 0);
+        MainPlot.Refresh();
     }
 
     private void EnableElements(bool state)
