@@ -1,88 +1,91 @@
-﻿using NeuronProject;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using NeuronProject;
 
-namespace NeuronInterface.Windows
+namespace NeuronInterface.Windows;
+
+/// <summary>
+///     Interaction logic for DataWindow.xaml
+/// </summary>
+public partial class DataWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for DataWindow.xaml
-    /// </summary>
-    public partial class DataWindow : Window
+    //tymczasowe rozwiazanie
+    private class DataItem
     {
-        //tymczasowe rozwiazanie
-        public class DataItem
-        {
-            public string Input1 { get; set; }
-            public string Input2 { get; set; }
-            public string Output { get; set; }
-        }
+        public string Input1 { get; init; }
+        public string Input2 { get; init; }
+        public string Output { get; init; }
+    }
 
-        private readonly InterfaceApp app;
-        public ObservableCollection<DataItem> DataGridCollection;
-        public DataWindow(InterfaceApp _app)
-        {
-            InitializeComponent();
-            app = _app;
-            CreateDataGridData();
-        }
+    private ObservableCollection<DataItem> _dataGridCollection;
 
-        private void CreateDataGridData()
+    public DataWindow()
+    {
+        InitializeComponent();
+        CreateDataGridData();
+    }
+
+    private void CreateDataGridData()
+    {
+        _dataGridCollection = new ObservableCollection<DataItem>();
+
+        foreach (var data in InterfaceApp.GetData())
         {
-            DataGridCollection = new ObservableCollection<DataItem>();
-            foreach (var data in app.GetData())
+            var item = new DataItem
             {
-                var item = new DataItem
-                {
-                    Input1 = data.Input[0].ToString(),
-                    Input2 = data.Input[1].ToString(),
-                    Output = data.Output.ToString()
-                };
-                DataGridCollection.Add(item);
-            }
-            DataGrid.ItemsSource = DataGridCollection;
+                Input1 = data.Input[0].ToString(),
+                Input2 = data.Input[1].ToString(),
+                Output = data.Output.ToString()
+            };
+            _dataGridCollection.Add(item);
         }
 
-        private void Return_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        DataGrid.ItemsSource = _dataGridCollection;
+    }
 
-        private void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            DataGridCollection.Remove((DataItem)DataGrid.SelectedItem);
-        }
+    private void Return_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+    private void Delete_Click(object sender, RoutedEventArgs e)
+    {
+        _dataGridCollection.Remove((DataItem)DataGrid.SelectedItem);
+    }
+
+    private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        var datalist = new List<Data>();
+
+        foreach (var dataItem in _dataGridCollection)
         {
-            var datalist = new List<Data>();
-            foreach (var dataItem in DataGridCollection)
+            var data = new Data();
+
+            if (decimal.TryParse(dataItem.Input1, out var dec1) && 
+                decimal.TryParse(dataItem.Input2, out var dec2) && 
+                decimal.TryParse(dataItem.Output, out var dec3))
             {
-                var data = new Data();
-                var tmp = new List<decimal>();
-                if (decimal.TryParse(dataItem.Input1, out var dec1) && decimal.TryParse(dataItem.Input2, out var dec2) && decimal.TryParse(dataItem.Output, out var dec3))
-                {
-                    tmp.Add(dec1);
-                    tmp.Add(dec2);
-                    data.Input = tmp;
-                    data.Output = dec3;
-                    datalist.Add(data);
-                }
-                else
-                {
-                    MessageBox.Show("Błędnie wpisane dane!");
-                    this.Close();
-                }
+                data.Input = new List<decimal> { dec1, dec2 };
+                data.Output = dec3;
+
+                datalist.Add(data);
             }
-            app.LoadDataFromDataList(datalist);
+            else
+            {
+                MessageBox.Show("Błędnie wpisane dane!");
+                Close();
+            }
         }
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9,-]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
+
+        InterfaceApp.LoadDataFromDataList(datalist);
+    }
+
+    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+    {
+        var regex = new Regex("[^0-9,-]+");
+        e.Handled = regex.IsMatch(e.Text);
     }
 }

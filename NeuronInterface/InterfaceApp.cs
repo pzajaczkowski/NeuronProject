@@ -1,10 +1,10 @@
-﻿using NeuronProject;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using NeuronProject;
 
 namespace NeuronInterface;
 
-public class InterfaceApp
+public static class InterfaceApp
 {
     /// <summary>
     ///     Tryb uczenia neuronu, warunek zatrzymania się uczenia.
@@ -48,12 +48,12 @@ public class InterfaceApp
         Running
     }
 
-    private MODE _mode = MODE.Error;
-    private NEURON _neuron = NEURON.Perceptron;
+    private static MODE _mode = MODE.Error;
+    private static NEURON _neuron = NEURON.Perceptron;
 
-    public STATE State { get; } = STATE.Waiting;
+    public static STATE State { get; } = STATE.Waiting;
 
-    public MODE Mode
+    public static MODE Mode
     {
         get => _mode;
         set
@@ -65,7 +65,7 @@ public class InterfaceApp
         }
     }
 
-    public NEURON Neuron
+    public static NEURON Neuron
     {
         get => _neuron;
         set
@@ -84,9 +84,9 @@ public class InterfaceApp
         }
     }
 
-    private NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
+    private static NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
 
-    public void LoadDataFromDataList(List<Data> data)
+    public static void LoadDataFromDataList(List<Data> data)
     {
         if (State != STATE.Waiting)
             throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
@@ -94,7 +94,7 @@ public class InterfaceApp
         NeuronApp.LoadDataFromDataList(data);
     }
 
-    public IList<Data> GetData()
+    public static IList<Data> GetData()
     {
         return NeuronApp.Data;
     }
