@@ -131,6 +131,7 @@ public partial class MainWindow : Window
         this.Solve.IsEnabled = state;
         this.NextStep.IsEnabled = state;
         this.NeuronType.IsEnabled = state;
+        this.StopCondition.IsEnabled = state;
         this.Load.IsEnabled = state;
         this.SaveAndExit.IsEnabled = state;
     }
