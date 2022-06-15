@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using NeuronProject;
 
 namespace NeuronInterface
 {
@@ -7,6 +8,8 @@ namespace NeuronInterface
     /// </summary>
     public partial class App : Application
     {
-
+        public App()
+        {
+        }
     }
 }

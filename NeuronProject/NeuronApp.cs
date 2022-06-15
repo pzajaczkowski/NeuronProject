@@ -6,7 +6,7 @@ public class NeuronApp
 {
     private readonly List<Data> _results = new();
     private List<Data> _data = new();
-    public Neuron? Neuron { get; set; }
+    public Neuron Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
@@ -34,10 +34,10 @@ public class NeuronApp
         if (data.Input.Count != 2)
             throw new Exception("data.Input.Count != 2");
 
-        if (_neuron is PerceptronNeuron && data.Output is not (1 or -1))
+        if (Neuron is PerceptronNeuron && data.Output is not (1 or -1))
             throw new Exception("Neuron allows only 1 or -1 as output");
 
-        if (_neuron is AdalineNeuron && data.Output is not (1 or 0))
+        if (Neuron is AdalineNeuron && data.Output is not (1 or 0))
             throw new Exception("Neuron allows only 1 or 0 as output");
 
         _data.Add(data);
@@ -49,12 +49,12 @@ public class NeuronApp
 
         foreach (var data in _data)
         {
-            _neuron.Inputs = data.Input;
+            Neuron.Inputs = data.Input;
 
             _results.Add(new Data
             {
                 Input = data.Input,
-                Output = _neuron.Calculate()
+                Output = Neuron.Calculate()
             });
         }
     }
@@ -77,10 +77,10 @@ public class NeuronApp
 
         foreach (var data in _data)
         {
-            _neuron.Inputs = data.Input;
-            _neuron.ExpectedOutput = data.Output;
+            Neuron.Inputs = data.Input;
+            Neuron.ExpectedOutput = data.Output;
 
-            _neuron.Learn();
+            Neuron.Learn();
         }
     }
 }
