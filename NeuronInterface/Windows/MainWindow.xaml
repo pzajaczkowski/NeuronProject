@@ -12,7 +12,7 @@
         <Button x:Name="LoadData" Content="Wczytaj dane" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="LoadData_Click"/>
         <Button x:Name="EditData" Content="Edytuj dane" HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="EditData_Click"/>
         <Button x:Name="Solve" Content="Rozwiąż (auto)" HorizontalAlignment="Left" Margin="20,120,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="Solve_Click"/>
-        <Button x:Name="StopSolve" Content="Stop" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
+        <Button x:Name="StopSolve" Content="Stop" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="StopSolve_Click"/>
         <Button x:Name="NextStep" Content="Następny krok" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,255,0,0" Click="NextStep_Click"/>
         <Button x:Name="SaveAndExit" Content="Zapisz i wyjdź" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,599,0,0"/>
         <ComboBox x:Name="NeuronType" HorizontalAlignment="Left" Margin="20,377,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0" SelectionChanged="NeuronType_SelectionChanged">
@@ -36,7 +36,7 @@
         <TextBox x:Name="CurrentError" HorizontalAlignment="Left" Margin="300,20,0,0" TextWrapping="Wrap" Text="0.1" VerticalAlignment="Top" Width="131" Height="20" IsReadOnly="True"/>
         <Label x:Name="IterationLabel" Content="Iteracja:" HorizontalAlignment="Left" Margin="444,15,0,0" VerticalAlignment="Top" Height="30" Width="131"/>
         <TextBox x:Name="Iteration" HorizontalAlignment="Left" Margin="498,20,0,0" TextWrapping="Wrap" Text="0.1" VerticalAlignment="Top" Width="131" Height="20" IsReadOnly="True"/>
-        <Button x:Name="Reset" Content="Reset" HorizontalAlignment="Left" Margin="20,210,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
+        <Button x:Name="Reset" IsEnabled="False" Content="Reset" HorizontalAlignment="Left" Margin="20,210,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="Reset_Click"/>
 
     </Grid>
 </Window>

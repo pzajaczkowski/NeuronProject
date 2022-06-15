@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        InterfaceApp.StateChangedEvent += StateChangedEvent;
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -109,6 +110,7 @@ public partial class MainWindow : Window
         InterfaceApp.Solve();
         Plot();
         EnableElements(true);
+        Reset.IsEnabled = true;
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -126,6 +128,7 @@ public partial class MainWindow : Window
     {
         Initialize();
         EnableElements(false);
+        Reset.IsEnabled = true;
         InterfaceApp.SolveStep();
         Plot();
     }
@@ -159,15 +162,61 @@ public partial class MainWindow : Window
 
         MainPlot.Refresh();
     }
-
-    private void EnableElements(bool state)
+    private void StopSolve_Click(object sender, RoutedEventArgs e)
     {
-        LoadData.IsEnabled = state;
-        EditData.IsEnabled = state;
-        Solve.IsEnabled = state;
-        NeuronType.IsEnabled = state;
-        StopCondition.IsEnabled = state;
-        Load.IsEnabled = state;
-        SaveAndExit.IsEnabled = state;
+        InterfaceApp.Stop();
+    }
+
+    private void Reset_Click(object sender, RoutedEventArgs e)
+    {
+        InterfaceApp.Reset();
+        MainPlot.Plot.Clear();
+        MainPlot.Refresh();
+        Reset.IsEnabled = false;
+    }
+
+    private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
+    {
+        switch (e)
+        {
+            case InterfaceApp.STATE.Stopped:
+                LoadData.IsEnabled = false;
+                EditData.IsEnabled = false;
+                Solve.IsEnabled = true;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = true;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = false;
+                SaveAndExit.IsEnabled = true;
+                break;
+            case InterfaceApp.STATE.Waiting:
+                LoadData.IsEnabled = true;
+                EditData.IsEnabled = true;
+                Solve.IsEnabled = true;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = false;
+                NeuronType.IsEnabled = true;
+                StopCondition.IsEnabled = true;
+                LearningRate.IsEnabled = true;
+                Load.IsEnabled = true;
+                SaveAndExit.IsEnabled = true;
+                break;
+            case InterfaceApp.STATE.Running:
+                LoadData.IsEnabled = false;
+                EditData.IsEnabled = false;
+                Solve.IsEnabled = false;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = true;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = false;
+                SaveAndExit.IsEnabled = false;
+                break;
+            default:
+                throw new Exception("On state changed event");
+        }
     }
 }
