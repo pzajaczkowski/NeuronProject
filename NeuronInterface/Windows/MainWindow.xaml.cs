@@ -1,9 +1,4 @@
-﻿using Microsoft.Win32;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Input;
-
-namespace NeuronInterface.Windows;
+﻿namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
@@ -15,6 +10,49 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+    {
+        var regex = new Regex("[^0-9.-]+");
+        e.Handled = regex.IsMatch(e.Text);
+    }
+
+    private void PositiveNumber(object sender, TextCompositionEventArgs e)
+    {
+        var regex = new Regex(@"^\d*\.?\d*$");
+        e.Handled = !regex.IsMatch(e.Text);
+    }
+
+    private void Initialize()
+    {
+        if (!decimal.TryParse(LearningRate.Text, out var learningRate))
+            throw new Exception();
+
+        InterfaceApp.LearningRate = learningRate;
+
+        switch (InterfaceApp.Mode)
+        {
+            case InterfaceApp.MODE.Error:
+                {
+                    if (!decimal.TryParse(LearningRate.Text, out var maxError))
+                        throw new Exception();
+
+                    InterfaceApp.MaxError = maxError;
+                    break;
+                }
+            case InterfaceApp.MODE.Iterations:
+                {
+                    if (!int.TryParse(LearningRate.Text, out var iterationStep))
+                        throw new Exception();
+
+                    InterfaceApp.IterationStep = iterationStep;
+                    break;
+                }
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     private void EditData_Click(object sender, RoutedEventArgs e)
     {
         var dataWindow = new DataWindow();
@@ -22,10 +60,25 @@ public partial class MainWindow : Window
         dataWindow.ShowDialog();
     }
 
-    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+    private void NeuronType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var regex = new Regex("[^0-9.-]+");
-        e.Handled = regex.IsMatch(e.Text);
+        var item = (ComboBoxItem)e.AddedItems[0];
+
+        if (item.Content.Equals("Perceptron"))
+            InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
+        if (item.Content.Equals("Adaline"))
+            InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
+    }
+
+    private void StopCondition_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var item = (ComboBoxItem)e.AddedItems[0];
+
+        if (item.Content.Equals("Próg błędu"))
+            InterfaceApp.Mode = InterfaceApp.MODE.Error;
+
+        if (item.Content.Equals("Ilość iteracji"))
+            InterfaceApp.Mode = InterfaceApp.MODE.Iterations;
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
