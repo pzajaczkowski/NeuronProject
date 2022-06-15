@@ -51,7 +51,7 @@ public static class InterfaceApp
     private static MODE _mode = MODE.Error;
     private static NEURON _neuron = NEURON.Perceptron;
 
-    public static STATE State { get; } = STATE.Waiting;
+    public static STATE State { get; private set; } = STATE.Waiting;
 
     public static MODE Mode
     {
@@ -102,5 +102,41 @@ public static class InterfaceApp
     public static IList<Data> GetData()
     {
         return NeuronApp.Data;
+    }
+
+    public static void Solve()
+    {
+        State = STATE.Running;
+
+        switch (Mode)
+        {
+            case MODE.Error:
+                SolveWithMaxError();
+                break;
+            case MODE.Iterations:
+                SolveWithIterationStep();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        State = STATE.Stopped;
+    }
+
+    private static void SolveWithMaxError()
+    {
+        var error = NeuronApp.CalculateWithAvgError();
+
+        while (error > MaxError)
+        {
+            error = NeuronApp.CalculateWithAvgError();
+            NeuronApp.Learn();
+        }
+    }
+
+    private static void SolveWithIterationStep()
+    {
+        for (var i = 0; i < IterationStep; i++)
+            NeuronApp.Learn();
     }
 }
