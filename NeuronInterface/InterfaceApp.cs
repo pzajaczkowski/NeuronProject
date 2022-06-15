@@ -6,21 +6,44 @@ namespace NeuronInterface;
 
 internal class InterfaceApp
 {
+    /// <summary>
+    ///     Tryb uczenia neuronu, warunek zatrzymania się uczenia.
+    /// </summary>
     public enum MODE
     {
+        /// <summary>
+        ///     Warunek zatrzymania maksymalny bład.
+        /// </summary>
         Error,
+
+        /// <summary>
+        ///     Warunek zatrzymania ilość iteracji.
+        /// </summary>
         Iterations
     }
 
+    /// <summary>
+    ///     Typ neuronu.
+    /// </summary>
     public enum NEURON
     {
         Perceptron,
         Adaline
     }
 
+    /// <summary>
+    ///     Aktualny stan aplikacji.
+    /// </summary>
     public enum STATE
     {
+        /// <summary>
+        ///     Oczekiwania na pierwszą iterację uczenia się.
+        /// </summary>
         Waiting,
+
+        /// <summary>
+        ///     Uczenie zatrzymane.
+        /// </summary>
         Stopped,
         Running
     }
