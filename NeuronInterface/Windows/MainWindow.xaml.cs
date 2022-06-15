@@ -1,12 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
-namespace NeuronInterface.Windows;
+﻿namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
@@ -51,7 +43,7 @@ public partial class MainWindow : Window
                 }
             case InterfaceApp.MODE.Iterations:
                 {
-                    if (!int.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                    if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
                         throw new Exception();
 
                     InterfaceApp.IterationStep = iterationStep;
@@ -115,6 +107,13 @@ public partial class MainWindow : Window
         };
         openFileDialog.ShowDialog();
         InterfaceApp.LoadDataFromFile(openFileDialog.FileName);
+    }
+
+    private void NextStep_Click(object sender, RoutedEventArgs e)
+    {
+        Initialize();
+
+        InterfaceApp.SolveStep();
     }
 
     private void EnableElements(bool state)

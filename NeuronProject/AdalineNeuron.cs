@@ -2,7 +2,7 @@
 
 public class AdalineNeuron : Neuron
 {
-    public decimal LearningRate { get; init; } = new(.01);
+    public decimal LearningRate { get; set; }
 
     protected override decimal ActivationFunction(decimal x)
     {
