@@ -141,14 +141,13 @@ public static class InterfaceApp
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        var result = NeuronApp.Results;
+        
         State = STATE.Stopped;
     }
 
     private static void SolveWithMaxError()
     {
-        while (AvgError > MaxError)
+        while (NeuronApp.CalculateWithAvgError() > MaxError)
             NeuronApp.Learn();
     }
 
