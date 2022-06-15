@@ -1,6 +1,6 @@
-﻿using NeuronProject;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using NeuronProject;
 
 namespace NeuronInterface;
 
@@ -88,8 +88,11 @@ public static class InterfaceApp
     private static NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
 
     public static decimal MaxError { get; set; }
-    public static int IterationStep { get; set; }
+    public static ulong IterationStep { get; set; }
     public static decimal LearningRate { get; set; }
+
+    public static ulong Iteration => NeuronApp.Iterations;
+    public static decimal AvgError => NeuronApp.AvgError();
 
     public static void LoadDataFromDataList(List<Data> data)
     {
@@ -109,9 +112,23 @@ public static class InterfaceApp
         return NeuronApp.Data;
     }
 
+    public static void SolveStep()
+    {
+        State = STATE.Running;
+
+        NeuronApp.Learn();
+
+        State = STATE.Stopped;
+    }
+
     public static void Solve()
     {
         State = STATE.Running;
+        if (Neuron == NEURON.Adaline)
+        {
+            var neuron = (AdalineNeuron)NeuronApp.Neuron;
+            neuron.LearningRate = LearningRate;
+        }
 
         switch (Mode)
         {
@@ -125,23 +142,19 @@ public static class InterfaceApp
                 throw new ArgumentOutOfRangeException();
         }
 
+        var result = NeuronApp.Results;
         State = STATE.Stopped;
     }
 
     private static void SolveWithMaxError()
     {
-        var error = NeuronApp.CalculateWithAvgError();
-
-        while (error > MaxError)
-        {
-            error = NeuronApp.CalculateWithAvgError();
+        while (AvgError > MaxError)
             NeuronApp.Learn();
-        }
     }
 
     private static void SolveWithIterationStep()
     {
-        for (var i = 0; i < IterationStep; i++)
+        for (ulong i = 0; i < IterationStep; i++)
             NeuronApp.Learn();
     }
 }

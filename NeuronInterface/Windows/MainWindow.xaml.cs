@@ -51,7 +51,7 @@ public partial class MainWindow : Window
             }
             case InterfaceApp.MODE.Iterations:
             {
-                if (!int.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
                     throw new Exception();
 
                 InterfaceApp.IterationStep = iterationStep;
@@ -107,5 +107,12 @@ public partial class MainWindow : Window
         };
         openFileDialog.ShowDialog();
         InterfaceApp.LoadDataFromFile(openFileDialog.FileName);
+    }
+
+    private void NextStep_Click(object sender, RoutedEventArgs e)
+    {
+        Initialize();
+
+        InterfaceApp.SolveStep();
     }
 }
