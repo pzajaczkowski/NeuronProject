@@ -1,4 +1,12 @@
-﻿namespace NeuronInterface.Windows;
+﻿using Microsoft.Win32;
+using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
@@ -94,7 +102,7 @@ public partial class MainWindow : Window
     private void Solve_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-
+        EnableElements(false);
         InterfaceApp.Solve();
     }
 
@@ -109,7 +117,7 @@ public partial class MainWindow : Window
         InterfaceApp.LoadDataFromFile(openFileDialog.FileName);
     }
 
-    private void ChangeElementsState(bool state)
+    private void EnableElements(bool state)
     {
         this.LoadData.IsEnabled = state;
         this.EditData.IsEnabled = state;
@@ -119,5 +127,4 @@ public partial class MainWindow : Window
         this.Load.IsEnabled = state;
         this.SaveAndExit.IsEnabled = state;
     }
-
 }
