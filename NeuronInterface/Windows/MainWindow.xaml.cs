@@ -1,11 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
-namespace NeuronInterface.Windows;
+﻿namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
@@ -31,7 +24,8 @@ public partial class MainWindow : Window
 
     private void Initialize()
     {
-        if (!decimal.TryParse(LearningRate.Text, out var learningRate))
+        if (!decimal.TryParse(LearningRate.Text, NumberStyles.AllowDecimalPoint, CultureInfo.GetCultureInfo("en-US"),
+                out var learningRate))
             throw new Exception();
 
         InterfaceApp.LearningRate = learningRate;
@@ -40,7 +34,8 @@ public partial class MainWindow : Window
         {
             case InterfaceApp.MODE.Error:
                 {
-                    if (!decimal.TryParse(LearningRate.Text, out var maxError))
+                    if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
+                            CultureInfo.GetCultureInfo("en-US"), out var maxError))
                         throw new Exception();
 
                     InterfaceApp.MaxError = maxError;
@@ -48,7 +43,7 @@ public partial class MainWindow : Window
                 }
             case InterfaceApp.MODE.Iterations:
                 {
-                    if (!int.TryParse(LearningRate.Text, out var iterationStep))
+                    if (!int.TryParse(StopConditionTextBox.Text, out var iterationStep))
                         throw new Exception();
 
                     InterfaceApp.IterationStep = iterationStep;
@@ -96,9 +91,16 @@ public partial class MainWindow : Window
             InterfaceApp.Mode = InterfaceApp.MODE.Iterations;
     }
 
+    private void Solve_Click(object sender, RoutedEventArgs e)
+    {
+        Initialize();
+
+        InterfaceApp.Solve();
+    }
+
     private void LoadData_Click(object sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog
+        var openFileDialog = new OpenFileDialog
         {
             Filter = "JSON files (*.json)|*.json",
             Title = "Wczytaj dane"

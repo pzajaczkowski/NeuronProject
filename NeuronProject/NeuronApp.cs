@@ -4,8 +4,8 @@ namespace NeuronProject;
 
 public class NeuronApp
 {
-    private readonly List<Data> _results = new();
     private readonly List<Data> _data = new();
+    private readonly List<Data> _results = new();
     public Neuron Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();
@@ -65,11 +65,21 @@ public class NeuronApp
         }
     }
 
+    public decimal CalculateWithAvgError()
+    {
+        Calculate();
+
+        decimal error = 0;
+
+        for (var i = 0; i < _results.Count; i++)
+            error += Math.Abs(_results[i].Output - _data[i].Output);
+
+        return error / _data.Count;
+    }
+
     public decimal AvgError()
     {
         decimal error = 0;
-
-        Calculate();
 
         for (var i = 0; i < _results.Count; i++)
             error += Math.Abs(_results[i].Output - _data[i].Output);
