@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
 
 namespace NeuronInterface.Windows;
 
@@ -43,22 +43,22 @@ public partial class MainWindow : Window
         switch (InterfaceApp.Mode)
         {
             case InterfaceApp.MODE.Error:
-            {
-                if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
-                        CultureInfo.GetCultureInfo("en-US"), out var maxError))
-                    throw new Exception();
+                {
+                    if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
+                            CultureInfo.GetCultureInfo("en-US"), out var maxError))
+                        throw new Exception();
 
-                InterfaceApp.MaxError = maxError;
-                break;
-            }
+                    InterfaceApp.MaxError = maxError;
+                    break;
+                }
             case InterfaceApp.MODE.Iterations:
-            {
-                if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
-                    throw new Exception();
+                {
+                    if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                        throw new Exception();
 
-                InterfaceApp.IterationStep = iterationStep;
-                break;
-            }
+                    InterfaceApp.IterationStep = iterationStep;
+                    break;
+                }
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -108,6 +108,7 @@ public partial class MainWindow : Window
         EnableElements(false);
         InterfaceApp.Solve();
         Plot();
+        EnableElements(true);
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -151,7 +152,7 @@ public partial class MainWindow : Window
         xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
         xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
 
-        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green);
+        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green, markerSize: 0);
 
         MainPlot.Refresh();
     }
