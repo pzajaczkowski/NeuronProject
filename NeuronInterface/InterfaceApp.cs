@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NeuronProject;
+using System;
 using System.Collections.Generic;
-using NeuronProject;
 
 namespace NeuronInterface;
 
-internal class InterfaceApp
+public class InterfaceApp
 {
     public enum MODE
     {

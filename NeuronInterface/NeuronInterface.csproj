@@ -15,8 +15,4 @@
     <PackageReference Include="ScottPlot.WPF" Version="4.1.48" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>
