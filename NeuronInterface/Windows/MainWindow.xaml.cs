@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace NeuronInterface.Windows;
 
@@ -45,17 +46,17 @@ public partial class MainWindow : Window
                         CultureInfo.GetCultureInfo("en-US"), out var maxError))
                     throw new Exception();
 
-                    InterfaceApp.MaxError = maxError;
-                    break;
-                }
+                InterfaceApp.MaxError = maxError;
+                break;
+            }
             case InterfaceApp.MODE.Iterations:
             {
                 if (!int.TryParse(StopConditionTextBox.Text, out var iterationStep))
                     throw new Exception();
 
-                    InterfaceApp.IterationStep = iterationStep;
-                    break;
-                }
+                InterfaceApp.IterationStep = iterationStep;
+                break;
+            }
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -99,7 +100,7 @@ public partial class MainWindow : Window
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog
+        var openFileDialog = new OpenFileDialog
         {
             Filter = "JSON files (*.json)|*.json",
             Title = "Wczytaj dane"
