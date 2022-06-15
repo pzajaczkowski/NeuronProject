@@ -125,13 +125,16 @@ public partial class MainWindow : Window
     private void NextStep_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-
+        EnableElements(false);
         InterfaceApp.SolveStep();
+        Plot();
     }
 
     private void Plot()
     {
-        var data = InterfaceApp.GetData();
+        MainPlot.Plot.Clear();
+
+        var data = InterfaceApp.Data;
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
         var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
         var input1b = inputsb.Select(x => (double)x[0]).ToArray();
@@ -162,7 +165,6 @@ public partial class MainWindow : Window
         LoadData.IsEnabled = state;
         EditData.IsEnabled = state;
         Solve.IsEnabled = state;
-        NextStep.IsEnabled = state;
         NeuronType.IsEnabled = state;
         StopCondition.IsEnabled = state;
         Load.IsEnabled = state;

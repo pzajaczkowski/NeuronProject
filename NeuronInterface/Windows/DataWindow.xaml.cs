@@ -32,7 +32,7 @@ public partial class DataWindow : Window
     {
         _dataGridCollection = new ObservableCollection<DataItem>();
 
-        foreach (var data in InterfaceApp.GetData())
+        foreach (var data in InterfaceApp.Data)
         {
             var item = new DataItem
             {

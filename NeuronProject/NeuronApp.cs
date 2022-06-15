@@ -5,11 +5,15 @@ namespace NeuronProject;
 public class NeuronApp
 {
     private readonly List<Data> _data = new();
+    private readonly List<decimal> _error = new();
     private readonly List<Data> _results = new();
     public Neuron Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
+    public IList<decimal> AvgErrorList => _error.AsReadOnly();
+    public decimal CurrentAvgError => _error.Last();
+
     public ulong Iterations { get; private set; }
 
     public void LoadDataFromDataList(List<Data> data)
@@ -69,19 +73,11 @@ public class NeuronApp
     {
         Calculate();
 
-        decimal error = 0;
-
-        for (var i = 0; i < _results.Count; i++)
-            error += Math.Abs(_results[i].Output - _data[i].Output);
-
-        return error / _data.Count;
+        return AvgError();
     }
 
-    public decimal AvgError()
+    private decimal AvgError()
     {
-        if (_results.Count == 0)
-            return CalculateWithAvgError();
-
         decimal error = 0;
 
         for (var i = 0; i < _results.Count; i++)
@@ -101,5 +97,7 @@ public class NeuronApp
 
             Neuron.Learn();
         }
+
+        _error.Add(CalculateWithAvgError());
     }
 }
