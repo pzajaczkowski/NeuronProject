@@ -87,6 +87,10 @@ public static class InterfaceApp
     public static bool Running => State != STATE.Waiting;
     private static NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
 
+    public static decimal MaxError { get; set; }
+    public static int IterationStep { get; set; }
+    public static decimal LearningRate { get; set; }
+
     public static void LoadDataFromDataList(List<Data> data)
     {
         if (State != STATE.Waiting)
