@@ -90,6 +90,7 @@ public static class InterfaceApp
     public static decimal MaxError { get; set; }
     public static ulong IterationStep { get; set; }
     public static decimal LearningRate { get; set; }
+    public static IList<Data> Data => NeuronApp.Data;
 
     public static ulong Iteration => NeuronApp.Iterations;
     public static decimal AvgError => NeuronApp.CurrentAvgError;
@@ -110,11 +111,6 @@ public static class InterfaceApp
     public static void LoadDataFromFile(string path)
     {
         NeuronApp.LoadDataFromFile(path);
-    }
-
-    public static IList<Data> GetData()
-    {
-        return NeuronApp.Data;
     }
 
     public static void SolveStep()

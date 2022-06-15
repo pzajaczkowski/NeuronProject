@@ -130,7 +130,7 @@ public partial class MainWindow : Window
 
     private void Plot()
     {
-        var data = InterfaceApp.GetData();
+        var data = InterfaceApp.Data;
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
         var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
         var input1b = inputsb.Select(x => (double)x[0]).ToArray();
@@ -151,7 +151,7 @@ public partial class MainWindow : Window
         xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
         xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
 
-        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green);
+        MainPlot.Plot.AddScatter(xs, xy, Color.Green);
 
         MainPlot.Refresh();
     }
