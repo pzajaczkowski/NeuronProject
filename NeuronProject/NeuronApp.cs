@@ -4,14 +4,9 @@ namespace NeuronProject;
 
 public class NeuronApp
 {
-    private readonly Neuron _neuron;
     private readonly List<Data> _results = new();
     private List<Data> _data = new();
-
-    public NeuronApp(Neuron neuron)
-    {
-        _neuron = neuron;
-    }
+    public Neuron? Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
@@ -39,7 +34,7 @@ public class NeuronApp
         if (data.Input.Count != 2)
             throw new Exception("data.Input.Count != 2");
 
-        if (_neuron is RegularNeuron && data.Output is not (1 or -1))
+        if (_neuron is PerceptronNeuron && data.Output is not (1 or -1))
             throw new Exception("Neuron allows only 1 or -1 as output");
 
         if (_neuron is AdalineNeuron && data.Output is not (1 or 0))

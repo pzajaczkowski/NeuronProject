@@ -1,6 +1,6 @@
 ﻿namespace NeuronProject;
 
-public class RegularNeuron : Neuron
+public class PerceptronNeuron : Neuron
 {
     protected override decimal ActivationFunction(decimal x)
     {
