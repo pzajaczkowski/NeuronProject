@@ -20,7 +20,7 @@
             <ComboBoxItem Content="Adaline"/>
         </ComboBox>
         <Label x:Name="NeuronTypeLabel" Content="Typ neuronu:" HorizontalAlignment="Left" Margin="20,297,0,0" VerticalAlignment="Top" Height="30" Width="83"/>
-        <ComboBox x:Name="StopCondition" HorizontalAlignment="Left" Margin="20,382,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0">
+        <ComboBox x:Name="StopCondition" HorizontalAlignment="Left" Margin="20,382,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0" SelectionChanged="StopCondition_SelectionChanged">
             <ComboBoxItem Content="Próg błędu"/>
             <ComboBoxItem Content="Ilość iteracji"/>
         </ComboBox>

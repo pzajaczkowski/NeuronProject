@@ -38,4 +38,14 @@ public partial class MainWindow : Window
         if (item.Content.Equals("Adaline"))
             InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
     }
+
+    private void StopCondition_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var item = (ComboBoxItem)e.AddedItems[0];
+
+        if (item.Content.Equals("Próg błędu"))
+            InterfaceApp.Mode = InterfaceApp.MODE.Error;
+        if (item.Content.Equals("Ilość iteracji"))
+            InterfaceApp.Mode = InterfaceApp.MODE.Iterations;
+    }
 }
