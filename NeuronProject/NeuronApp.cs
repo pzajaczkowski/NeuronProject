@@ -10,7 +10,7 @@ public class NeuronApp
 
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
-    public int Iterations { get; private set; }
+    public ulong Iterations { get; private set; }
 
     public void LoadDataFromDataList(List<Data> data)
     {
@@ -79,6 +79,9 @@ public class NeuronApp
 
     public decimal AvgError()
     {
+        if (_results.Count == 0)
+            return CalculateWithAvgError();
+
         decimal error = 0;
 
         for (var i = 0; i < _results.Count; i++)
