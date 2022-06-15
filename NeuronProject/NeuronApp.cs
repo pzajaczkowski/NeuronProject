@@ -5,7 +5,7 @@ namespace NeuronProject;
 public class NeuronApp
 {
     private readonly List<Data> _results = new();
-    private List<Data> _data = new();
+    private readonly List<Data> _data = new();
     public Neuron Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();
@@ -14,7 +14,10 @@ public class NeuronApp
 
     public void LoadDataFromDataList(List<Data> data)
     {
-        _data = data;
+        _data.Clear();
+
+        foreach (var item in data)
+            AddData(item);
     }
 
     public void LoadDataFromFile(string path)
@@ -24,9 +27,12 @@ public class NeuronApp
 
         var json = File.ReadAllText(path);
 
-        _data.Clear();
+        var data = JsonSerializer.Deserialize<List<Data>>(json);
 
-        _data = JsonSerializer.Deserialize<List<Data>>(json);
+        if (data == null)
+            throw new Exception("json?");
+
+        LoadDataFromDataList(data);
     }
 
     public void AddData(Data data)
