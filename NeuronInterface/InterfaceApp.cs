@@ -70,7 +70,7 @@ public static class InterfaceApp
         get => _neuron;
         set
         {
-            if (State == STATE.Running)
+            if (Running)
                 throw new Exception("Nie można zmienić neuronu w czasie działania aplikacji");
 
             _neuron = value;
@@ -84,6 +84,7 @@ public static class InterfaceApp
         }
     }
 
+    public static bool Running => State != STATE.Waiting;
     private static NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
 
     public static void LoadDataFromDataList(List<Data> data)

@@ -15,7 +15,7 @@
         <Button x:Name="StopSolve" Content="Stop" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
         <Button x:Name="NextStep" Content="Następny krok" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,210,0,0"/>
         <Button x:Name="SaveAndExit" Content="Zapisz i wyjdź" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,549,0,0"/>
-        <ComboBox x:Name="NeuronType" HorizontalAlignment="Left" Margin="20,327,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0">
+        <ComboBox x:Name="NeuronType" HorizontalAlignment="Left" Margin="20,327,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0" SelectionChanged="NeuronType_SelectionChanged">
             <ComboBoxItem Content="Perceptron"/>
             <ComboBoxItem Content="Adaline"/>
         </ComboBox>

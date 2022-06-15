@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NeuronInterface.Windows;
@@ -26,5 +27,15 @@ public partial class MainWindow : Window
     {
         var regex = new Regex("[^0-9.-]+");
         e.Handled = regex.IsMatch(e.Text);
+    }
+
+    private void NeuronType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var item = (ComboBoxItem)e.AddedItems[0];
+
+        if (item.Content.Equals("Perceptron"))
+            InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
+        if (item.Content.Equals("Adaline"))
+            InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
     }
 }
