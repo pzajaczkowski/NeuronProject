@@ -28,7 +28,7 @@
         <Button x:Name="MainGraph" Content="Wykres Błędu" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,255,0,0"/>
         <Button x:Name="Load" Content="Wczytaj" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,504,0,0"/>
         <Label x:Name="LearningRateLabel" Content="Współczynnik uczenia:" HorizontalAlignment="Left" Margin="20,432,0,0" VerticalAlignment="Top" Height="30" Width="131" Visibility="Hidden"/>
-        <TextBox PreviewTextInput="PositiveNumber" x:Name="StopConditionTextBox" HorizontalAlignment="Left" Margin="20,412,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="131" Height="20"/>
+        <TextBox PreviewTextInput="PositiveNumber" x:Name="StopConditionTextBox" HorizontalAlignment="Left" Margin="20,412,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" Height="20"/>
         <TextBox x:Name="LearningRate" HorizontalAlignment="Left" Margin="20,462,0,0" TextWrapping="Wrap" Text="0.1" VerticalAlignment="Top" Width="131" Height="20" Visibility="Hidden"/>
 
         <WpfPlot Name="MainPlot" Margin="202,50,60,45" />
