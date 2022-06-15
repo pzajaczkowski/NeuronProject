@@ -1,4 +1,11 @@
-﻿namespace NeuronInterface.Windows;
+﻿using Microsoft.Win32;
+using System;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace NeuronInterface.Windows;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
@@ -64,10 +71,18 @@ public partial class MainWindow : Window
     {
         var item = (ComboBoxItem)e.AddedItems[0];
 
-        if (item.Content.Equals("Perceptron"))
+        if (item.Content.Equals("Perceptron") && this.LearningRate != null)
+        {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
-        if (item.Content.Equals("Adaline"))
+            this.LearningRate.Visibility = Visibility.Hidden;
+            this.LearningRateLabel.Visibility = Visibility.Hidden;
+        }
+        if (item.Content.Equals("Adaline") && this.LearningRate != null)
+        {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
+            this.LearningRate.Visibility = Visibility.Visible;
+            this.LearningRateLabel.Visibility = Visibility.Visible;
+        }
     }
 
     private void StopCondition_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -91,4 +106,16 @@ public partial class MainWindow : Window
         openFileDialog.ShowDialog();
         InterfaceApp.LoadDataFromFile(openFileDialog.FileName);
     }
+
+    private void ChangeElementsState(bool state)
+    {
+        this.LoadData.IsEnabled = state;
+        this.EditData.IsEnabled = state;
+        this.Solve.IsEnabled = state;
+        this.NextStep.IsEnabled = state;
+        this.NeuronType.IsEnabled = state;
+        this.Load.IsEnabled = state;
+        this.SaveAndExit.IsEnabled = state;
+    }
+
 }
