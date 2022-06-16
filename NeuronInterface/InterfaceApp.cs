@@ -10,8 +10,11 @@ namespace NeuronInterface;
 
 public static partial class InterfaceApp
 {
-    public static void SaveToJson()
+    public static void SaveToJson(string path)
     {
+        if (path == string.Empty)
+            return;
+
         var app = new AppJson
         {
             IterationStep = IterationStep,
@@ -34,25 +37,42 @@ public static partial class InterfaceApp
             TypeNameHandling = TypeNameHandling.All
         });
 
-        File.WriteAllText("data.json", json);
+        File.WriteAllText(path, json);
     }
 
-    public static void LoadFromJson()
+    public static void LoadFromJson(string path)
     {
-        var json = File.ReadAllText("data.json");
+        if (path == string.Empty)
+            return;
 
-        var app = JsonConvert.DeserializeObject<AppJson>(json, new JsonSerializerSettings
+        try
         {
-            TypeNameHandling = TypeNameHandling.All
-        });
+            var json = File.ReadAllText(path);
+            var app = JsonConvert.DeserializeObject<AppJson>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
 
-        _mode = app.Mode;
-        _neuron = app.NeuronMode;
-        MaxError = app.MaxError;
-        IterationStep = app.IterationStep;
-        LearningRate = app.LearningRate;
-        NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
-            app.NeuronApp.Error, app.NeuronApp.Results);
+            _mode = app.Mode;
+            _neuron = app.NeuronMode;
+            MaxError = app.MaxError;
+            IterationStep = app.IterationStep;
+            LearningRate = app.LearningRate;
+            NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
+                app.NeuronApp.Error, app.NeuronApp.Results);
+
+            State = STATE.Waiting;
+        }
+        catch (FileNotFoundException e)
+        {
+            //TODO
+            Console.WriteLine(e);
+        }
+        catch (JsonException e)
+        {
+            //TODO
+            Console.WriteLine(e);
+        }
     }
 
     private class NeuronAppJson

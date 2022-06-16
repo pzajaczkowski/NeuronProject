@@ -188,7 +188,7 @@ public partial class MainWindow : Window
                 LoadData.IsEnabled = false;
                 EditData.IsEnabled = false;
                 Solve.IsEnabled = true;
-                StopSolve.IsEnabled = true;
+                StopSolve.IsEnabled = false;
                 Reset.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
@@ -227,11 +227,35 @@ public partial class MainWindow : Window
 
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)
     {
-        InterfaceApp.SaveToJson();
+        var FileDialog = new SaveFileDialog
+        {
+            Filter = "JSON files (*.json)|*.json",
+            Title = "Wczytaj dane"
+        };
+        FileDialog.ShowDialog();
+
+        Initialize();
+        InterfaceApp.SaveToJson(FileDialog.FileName);
     }
 
     private void Load_Click(object sender, RoutedEventArgs e)
     {
-        InterfaceApp.LoadFromJson();
+        var FileDialog = new OpenFileDialog
+        {
+            Filter = "JSON files (*.json)|*.json",
+            Title = "Wczytaj dane"
+        };
+        FileDialog.ShowDialog();
+        InterfaceApp.LoadFromJson(FileDialog.FileName);
+
+        NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
+
+        StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
+            ? InterfaceApp.MaxError.ToString(CultureInfo.GetCultureInfo("en-US"))
+            : InterfaceApp.IterationStep.ToString();
+        Iteration.Text = InterfaceApp.Iteration.ToString();
+
+        if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
+            LearningRate.Text = InterfaceApp.LearningRate.ToString(CultureInfo.GetCultureInfo("en-US"));
     }
 }
