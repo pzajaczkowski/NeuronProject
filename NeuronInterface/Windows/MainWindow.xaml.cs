@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace NeuronInterface.Windows;
 
@@ -44,22 +44,22 @@ public partial class MainWindow : Window
         switch (InterfaceApp.Mode)
         {
             case InterfaceApp.MODE.Error:
-                {
-                    if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
-                            CultureInfo.GetCultureInfo("en-US"), out var maxError))
-                        throw new Exception();
+            {
+                if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
+                        CultureInfo.GetCultureInfo("en-US"), out var maxError))
+                    throw new Exception();
 
-                    InterfaceApp.MaxError = maxError;
-                    break;
-                }
+                InterfaceApp.MaxError = maxError;
+                break;
+            }
             case InterfaceApp.MODE.Iterations:
-                {
-                    if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
-                        throw new Exception();
+            {
+                if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                    throw new Exception();
 
-                    InterfaceApp.IterationStep = iterationStep;
-                    break;
-                }
+                InterfaceApp.IterationStep = iterationStep;
+                break;
+            }
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -106,10 +106,10 @@ public partial class MainWindow : Window
     private void Solve_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        EnableElements(false);
+        //EnableElements(false);
         InterfaceApp.Solve();
         Plot();
-        EnableElements(true);
+        //EnableElements(true);
         Reset.IsEnabled = true;
     }
 
@@ -127,7 +127,7 @@ public partial class MainWindow : Window
     private void NextStep_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        EnableElements(false);
+        //EnableElements(false);
         Reset.IsEnabled = true;
         InterfaceApp.SolveStep();
         Plot();
@@ -158,10 +158,11 @@ public partial class MainWindow : Window
         xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
         xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
 
-        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green, markerSize: 0);
+        MainPlot.Plot.AddLine(xs[0], xy[0], xs[1], xy[1], Color.Green);
 
         MainPlot.Refresh();
     }
+
     private void StopSolve_Click(object sender, RoutedEventArgs e)
     {
         InterfaceApp.Stop();
