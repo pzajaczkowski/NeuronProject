@@ -59,10 +59,10 @@ public class NeuronApp
             throw new Exception("data.Input.Count != 2");
 
         if (Neuron is PerceptronNeuron && data.Output is not (1 or -1))
-            throw new Exception("Neuron allows only 1 or -1 as output");
+            throw new PerceptronDataException();
 
         if (Neuron is AdalineNeuron && data.Output is not (1 or 0))
-            throw new Exception("Neuron allows only 1 or 0 as output");
+            throw new AdalineDataException();
 
         _data.Add(data);
     }
@@ -121,5 +121,13 @@ public class NeuronApp
         _results.Clear();
         Neuron = neuron;
         Iterations = 0;
+    }
+
+    public class AdalineDataException : Exception
+    {
+    }
+
+    public class PerceptronDataException : Exception
+    {
     }
 }
