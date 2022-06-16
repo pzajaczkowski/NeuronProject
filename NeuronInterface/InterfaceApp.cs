@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuronProject;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -120,8 +121,17 @@ public static partial class InterfaceApp
 
     private static MODE _mode = MODE.Error;
     private static NEURON _neuron = NEURON.Perceptron;
+    private static STATE _state = STATE.Waiting;
 
-    public static STATE State { get; private set; } = STATE.Waiting;
+    public static STATE State
+    {
+        get => _state;
+        private set
+        {
+            _state = value;
+            StateChangedEvent?.Invoke(null, _state);
+        }
+    }
 
     public static MODE Mode
     {
@@ -154,6 +164,8 @@ public static partial class InterfaceApp
         }
     }
 
+    public static EventHandler<STATE>? StateChangedEvent;
+
     public static bool Running => State != STATE.Waiting;
     private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
@@ -165,6 +177,10 @@ public static partial class InterfaceApp
     public static ulong Iteration => NeuronApp.Iterations;
     public static decimal AvgError => NeuronApp.CurrentAvgError;
 
+    public static void Stop()
+    {
+        State = STATE.Stopped;
+    }
     public static decimal GetResultLinePoint(decimal x)
     {
         return -1 * (NeuronApp.Neuron.Bias + NeuronApp.Neuron.Weights[0] * x) / NeuronApp.Neuron.Weights[1];
@@ -226,5 +242,11 @@ public static partial class InterfaceApp
     {
         for (ulong i = 0; i < IterationStep; i++)
             NeuronApp.Learn();
+    }
+
+    public static void Reset()
+    {
+        NeuronApp.Reset((Neuron == NEURON.Perceptron) ? new PerceptronNeuron() : new AdalineNeuron());
+        State = STATE.Waiting;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
 
 namespace NeuronInterface.Windows;
 
@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        InterfaceApp.StateChangedEvent += StateChangedEvent;
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -43,22 +44,22 @@ public partial class MainWindow : Window
         switch (InterfaceApp.Mode)
         {
             case InterfaceApp.MODE.Error:
-            {
-                if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
-                        CultureInfo.GetCultureInfo("en-US"), out var maxError))
-                    throw new Exception();
+                {
+                    if (!decimal.TryParse(StopConditionTextBox.Text, NumberStyles.AllowDecimalPoint,
+                            CultureInfo.GetCultureInfo("en-US"), out var maxError))
+                        throw new Exception();
 
-                InterfaceApp.MaxError = maxError;
-                break;
-            }
+                    InterfaceApp.MaxError = maxError;
+                    break;
+                }
             case InterfaceApp.MODE.Iterations:
-            {
-                if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
-                    throw new Exception();
+                {
+                    if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
+                        throw new Exception();
 
-                InterfaceApp.IterationStep = iterationStep;
-                break;
-            }
+                    InterfaceApp.IterationStep = iterationStep;
+                    break;
+                }
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -108,6 +109,8 @@ public partial class MainWindow : Window
         EnableElements(false);
         InterfaceApp.Solve();
         Plot();
+        EnableElements(true);
+        Reset.IsEnabled = true;
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -124,12 +127,16 @@ public partial class MainWindow : Window
     private void NextStep_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-
+        EnableElements(false);
+        Reset.IsEnabled = true;
         InterfaceApp.SolveStep();
+        Plot();
     }
 
     private void Plot()
     {
+        MainPlot.Plot.Clear();
+
         var data = InterfaceApp.Data;
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
         var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
@@ -151,21 +158,66 @@ public partial class MainWindow : Window
         xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
         xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
 
-        MainPlot.Plot.AddScatter(xs, xy, Color.Green);
+        MainPlot.Plot.AddScatter(xs, xy, color: Color.Green, markerSize: 0);
 
         MainPlot.Refresh();
     }
-
-    private void EnableElements(bool state)
+    private void StopSolve_Click(object sender, RoutedEventArgs e)
     {
-        LoadData.IsEnabled = state;
-        EditData.IsEnabled = state;
-        Solve.IsEnabled = state;
-        NextStep.IsEnabled = state;
-        NeuronType.IsEnabled = state;
-        StopCondition.IsEnabled = state;
-        Load.IsEnabled = state;
-        SaveAndExit.IsEnabled = state;
+        InterfaceApp.Stop();
+    }
+
+    private void Reset_Click(object sender, RoutedEventArgs e)
+    {
+        InterfaceApp.Reset();
+        MainPlot.Plot.Clear();
+        MainPlot.Refresh();
+        Reset.IsEnabled = false;
+    }
+
+    private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
+    {
+        switch (e)
+        {
+            case InterfaceApp.STATE.Stopped:
+                LoadData.IsEnabled = false;
+                EditData.IsEnabled = false;
+                Solve.IsEnabled = true;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = true;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = false;
+                SaveAndExit.IsEnabled = true;
+                break;
+            case InterfaceApp.STATE.Waiting:
+                LoadData.IsEnabled = true;
+                EditData.IsEnabled = true;
+                Solve.IsEnabled = true;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = false;
+                NeuronType.IsEnabled = true;
+                StopCondition.IsEnabled = true;
+                LearningRate.IsEnabled = true;
+                Load.IsEnabled = true;
+                SaveAndExit.IsEnabled = true;
+                break;
+            case InterfaceApp.STATE.Running:
+                LoadData.IsEnabled = false;
+                EditData.IsEnabled = false;
+                Solve.IsEnabled = false;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = true;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = false;
+                SaveAndExit.IsEnabled = false;
+                break;
+            default:
+                throw new Exception("On state changed event");
+        }
     }
 
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)

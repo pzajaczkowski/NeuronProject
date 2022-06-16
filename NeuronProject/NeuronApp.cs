@@ -114,4 +114,12 @@ public class NeuronApp
 
         _error.Add(CalculateWithAvgError());
     }
+
+    public void Reset(Neuron neuron)
+    {
+        _error.Clear();
+        _results.Clear();
+        Neuron = neuron;
+        Iterations = 0;
+    }
 }
