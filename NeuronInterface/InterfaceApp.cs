@@ -1,10 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using NeuronProject;
+using Newtonsoft.Json;
 
 namespace NeuronInterface;
 
-public static class InterfaceApp
+public static partial class InterfaceApp
+{
+    public static void SaveToJson()
+    {
+        var app = new AppJson
+        {
+            IterationStep = IterationStep,
+            LearningRate = LearningRate,
+            MaxError = MaxError,
+            NeuronApp = new NeuronAppJson
+            {
+                Data = NeuronApp.Data.ToList(),
+                Error = NeuronApp.AvgErrorList.ToList(),
+                Results = NeuronApp.Results.ToList(),
+                Neuron = NeuronApp.Neuron,
+                Iterations = NeuronApp.Iterations
+            },
+            NeuronMode = _neuron,
+            Mode = _mode
+        };
+
+        var json = JsonConvert.SerializeObject(app, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        });
+
+        File.WriteAllText("data.json", json);
+    }
+
+    public static void LoadFromJson()
+    {
+        var json = File.ReadAllText("data.json");
+
+        var app = JsonConvert.DeserializeObject<AppJson>(json, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        });
+
+        _mode = app.Mode;
+        _neuron = app.NeuronMode;
+        MaxError = app.MaxError;
+        IterationStep = app.IterationStep;
+        LearningRate = app.LearningRate;
+        NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
+            app.NeuronApp.Error, app.NeuronApp.Results);
+    }
+
+    private class NeuronAppJson
+    {
+        public List<Data> Data { get; init; }
+        public List<decimal> Error { get; init; }
+        public List<Data> Results { get; init; }
+        public Neuron Neuron { get; init; }
+        public ulong Iterations { get; init; }
+    }
+
+    private class AppJson
+    {
+        public MODE Mode { get; init; }
+        public NEURON NeuronMode { get; init; }
+        public NeuronAppJson NeuronApp { get; init; }
+        public decimal MaxError { get; init; }
+        public ulong IterationStep { get; init; }
+        public decimal LearningRate { get; init; }
+    }
+}
+
+public static partial class InterfaceApp
 {
     /// <summary>
     ///     Tryb uczenia neuronu, warunek zatrzymania się uczenia.
@@ -85,7 +155,7 @@ public static class InterfaceApp
     }
 
     public static bool Running => State != STATE.Waiting;
-    private static NeuronApp NeuronApp { get; } = new() { Neuron = new PerceptronNeuron() };
+    private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
     public static decimal MaxError { get; set; }
     public static ulong IterationStep { get; set; }
