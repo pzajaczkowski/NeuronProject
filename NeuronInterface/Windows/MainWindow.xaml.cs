@@ -247,7 +247,7 @@ public partial class MainWindow : Window
         Iteration.Text = InterfaceApp.Iteration.ToString();
         CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
 
-        //Plot();
+        Plot();
     }
 
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)

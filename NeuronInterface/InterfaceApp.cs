@@ -191,8 +191,16 @@ public static partial class InterfaceApp
 
             NeuronApp.Neuron = value switch
             {
-                NEURON.Perceptron => new PerceptronNeuron(),
-                NEURON.Adaline => new AdalineNeuron(),
+                NEURON.Perceptron => new PerceptronNeuron
+                {
+                    Bias = NeuronApp.Neuron.Bias,
+                    Weights = NeuronApp.Neuron.Weights
+                },
+                NEURON.Adaline => new AdalineNeuron
+                {
+                    Bias = NeuronApp.Neuron.Bias,
+                    Weights = NeuronApp.Neuron.Weights
+                },
                 _ => throw new Exception("how?????")
             };
         }
