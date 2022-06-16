@@ -1,8 +1,8 @@
-﻿using NeuronProject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NeuronProject;
 using Newtonsoft.Json;
 
 namespace NeuronInterface;
@@ -122,6 +122,8 @@ public static partial class InterfaceApp
     private static NEURON _neuron = NEURON.Perceptron;
     private static STATE _state = STATE.Waiting;
 
+    public static EventHandler<STATE>? StateChangedEvent;
+
     public static STATE State
     {
         get => _state;
@@ -163,8 +165,6 @@ public static partial class InterfaceApp
         }
     }
 
-    public static EventHandler<STATE>? StateChangedEvent;
-
     public static bool Running => State != STATE.Waiting;
     private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
@@ -180,7 +180,23 @@ public static partial class InterfaceApp
     {
         State = STATE.Stopped;
     }
-    public static decimal GetResultLinePoint(decimal x)
+
+    public static ((double, double), (double, double)) GetLine()
+    {
+        var min = NeuronApp.Data.Aggregate((min, item) => item.Input[0] < min.Input[0] ? item : min);
+        var max = NeuronApp.Data.Aggregate((max, item) => item.Input[0] > max.Input[0] ? item : max);
+
+        return (
+            (
+                (double)min.Input[0], (double)GetResultLinePoint(min.Input[0])
+            ),
+            (
+                (double)max.Input[0], (double)GetResultLinePoint(max.Input[0])
+            )
+        );
+    }
+
+    private static decimal GetResultLinePoint(decimal x)
     {
         return -1 * (NeuronApp.Neuron.Bias + NeuronApp.Neuron.Weights[0] * x) / NeuronApp.Neuron.Weights[1];
     }
@@ -245,7 +261,7 @@ public static partial class InterfaceApp
 
     public static void Reset()
     {
-        NeuronApp.Reset((Neuron == NEURON.Perceptron) ? new PerceptronNeuron() : new AdalineNeuron());
+        NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
         State = STATE.Waiting;
     }
 }

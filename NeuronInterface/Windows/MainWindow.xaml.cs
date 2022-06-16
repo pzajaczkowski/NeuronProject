@@ -150,16 +150,8 @@ public partial class MainWindow : Window
         if (input1r.Length == input2r.Length && input1r.Length > 0)
             MainPlot.Plot.AddScatter(input1r, input2r, Color.Red, 0);
 
-        var xs = new double[2];
-        xs[0] = (double)data.Select(x => x.Input).Max(y => y[0]);
-        xs[1] = (double)data.Select(x => x.Input).Min(y => y[0]);
-        var xy = new double[2];
-
-        xy[0] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[0]);
-        xy[1] = (double)InterfaceApp.GetResultLinePoint((decimal)xs[1]);
-
-        MainPlot.Plot.AddLine(xs[0], xy[0], xs[1], xy[1], Color.Green);
-
+        var ((x, y), (x1, y1)) = InterfaceApp.GetLine();
+        MainPlot.Plot.AddLine(x, y, x1, y1, Color.Green);
         MainPlot.Refresh();
     }
 
