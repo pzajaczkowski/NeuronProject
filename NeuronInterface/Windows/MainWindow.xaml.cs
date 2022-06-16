@@ -110,7 +110,6 @@ public partial class MainWindow : Window
         InterfaceApp.Solve();
         Plot();
         //EnableElements(true);
-        Reset.IsEnabled = true;
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -128,8 +127,9 @@ public partial class MainWindow : Window
     {
         Initialize();
         //EnableElements(false);
-        Reset.IsEnabled = true;
         InterfaceApp.SolveStep();
+
+        UpdateText();
         Plot();
     }
 

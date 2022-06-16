@@ -288,6 +288,11 @@ public static partial class InterfaceApp
     public static void SolveStep()
     {
         State = STATE.Running;
+        if (Neuron == NEURON.Adaline)
+        {
+            var neuron = (AdalineNeuron)NeuronApp.Neuron;
+            neuron.LearningRate = LearningRate;
+        }
 
         NeuronApp.Learn();
 
