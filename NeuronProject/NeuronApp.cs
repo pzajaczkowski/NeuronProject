@@ -7,6 +7,20 @@ public class NeuronApp
     private readonly List<Data> _data = new();
     private readonly List<decimal> _error = new();
     private readonly List<Data> _results = new();
+
+    public NeuronApp()
+    {
+    }
+
+    public NeuronApp(Neuron neuron, ulong iterations, List<Data> data, List<decimal> error, List<Data> result)
+    {
+        Neuron = neuron;
+        Iterations = iterations;
+        _data = data;
+        _error = error;
+        _results = result;
+    }
+
     public Neuron Neuron { get; set; }
 
     public IList<Data> Data => _data.AsReadOnly();

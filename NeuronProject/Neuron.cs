@@ -2,28 +2,29 @@
 
 public abstract class Neuron
 {
-    protected Neuron()
+    public IList<decimal> Weights { get; init; } = new List<decimal>();
+    public IList<decimal> Inputs { get; set; } = new List<decimal>();
+
+    public decimal Bias { get; set; }
+    public decimal ExpectedOutput { get; set; }
+
+    protected void SetRandomWeights()
     {
         var random = new Random();
 
-        Weights = new List<decimal>();
         Weights.Add(new decimal(random.NextDouble()));
         Weights.Add(new decimal(random.NextDouble()));
 
         Bias = new decimal(random.NextDouble());
     }
 
-    public IList<decimal> Weights { get; }
-    public IList<decimal> Inputs { get; set; } = new List<decimal>();
-
-    public decimal Bias { get; protected set; }
-    public decimal ExpectedOutput { get; set; }
     protected abstract decimal ActivationFunction(decimal x);
 
     public virtual decimal Calculate()
     {
         if (Weights.Count != Inputs.Count || !Weights.Any())
-            throw new Exception("Weights.Count() != Inputs.Count() || !Weights.Any()");
+            SetRandomWeights();
+        //throw new Exception("Weights.Count() != Inputs.Count() || !Weights.Any()");
 
         decimal sum = 0;
 
