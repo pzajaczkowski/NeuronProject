@@ -265,12 +265,17 @@ public static partial class InterfaceApp
             if (_loadingTry > 1)
                 throw;
 
-            if (e is NeuronApp.AdalineDataException)
-                Neuron = NEURON.Perceptron;
-            if (e is NeuronApp.PerceptronDataException)
-                Neuron = NEURON.Adaline;
-            else
-                throw;
+            switch (e)
+            {
+                case NeuronApp.AdalineDataException:
+                    Neuron = NEURON.Perceptron;
+                    break;
+                case NeuronApp.PerceptronDataException:
+                    Neuron = NEURON.Adaline;
+                    break;
+                default:
+                    throw;
+            }
 
             LoadDataFromFile(path);
             return;
