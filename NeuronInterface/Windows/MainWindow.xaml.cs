@@ -170,6 +170,8 @@ public partial class MainWindow : Window
 
     private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
     {
+        UpdateText();
+
         switch (e)
         {
             case InterfaceApp.STATE.Empty:
@@ -225,6 +227,19 @@ public partial class MainWindow : Window
         }
     }
 
+    private void UpdateText()
+    {
+        NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
+
+        StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
+            ? InterfaceApp.MaxError.ToString(CultureInfo.GetCultureInfo("en-US"))
+            : InterfaceApp.IterationStep.ToString();
+        Iteration.Text = InterfaceApp.Iteration.ToString();
+
+        if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
+            LearningRate.Text = InterfaceApp.LearningRate.ToString(CultureInfo.GetCultureInfo("en-US"));
+    }
+
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)
     {
         var FileDialog = new SaveFileDialog
@@ -248,14 +263,6 @@ public partial class MainWindow : Window
         FileDialog.ShowDialog();
         InterfaceApp.LoadFromJson(FileDialog.FileName);
 
-        NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
-
-        StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
-            ? InterfaceApp.MaxError.ToString(CultureInfo.GetCultureInfo("en-US"))
-            : InterfaceApp.IterationStep.ToString();
-        Iteration.Text = InterfaceApp.Iteration.ToString();
-
-        if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
-            LearningRate.Text = InterfaceApp.LearningRate.ToString(CultureInfo.GetCultureInfo("en-US"));
+        UpdateText();
     }
 }

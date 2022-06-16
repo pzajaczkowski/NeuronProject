@@ -154,6 +154,8 @@ public static partial class InterfaceApp
 
     public static EventHandler<STATE>? StateChangedEvent;
 
+    private static int _loadingTry;
+
     public static STATE State
     {
         get => _state;
@@ -200,7 +202,7 @@ public static partial class InterfaceApp
 
     public static decimal MaxError { get; set; }
     public static ulong IterationStep { get; set; }
-    public static decimal LearningRate { get; set; }
+    public static decimal LearningRate { get; set; } = new(.1);
     public static IList<Data> Data => NeuronApp.Data;
 
     public static ulong Iteration => NeuronApp.Iterations;
@@ -241,6 +243,7 @@ public static partial class InterfaceApp
 
     public static void LoadDataFromFile(string path)
     {
+        _loadingTry++;
         try
         {
             NeuronApp.LoadDataFromFile(path);
@@ -257,6 +260,23 @@ public static partial class InterfaceApp
             //TODO
             Console.WriteLine(e);
         }
+        catch (Exception e)
+        {
+            if (_loadingTry > 1)
+                throw;
+
+            if (e is NeuronApp.AdalineDataException)
+                Neuron = NEURON.Perceptron;
+            if (e is NeuronApp.PerceptronDataException)
+                Neuron = NEURON.Adaline;
+            else
+                throw;
+
+            LoadDataFromFile(path);
+            return;
+        }
+
+        _loadingTry = 0;
     }
 
     public static void SolveStep()
