@@ -216,6 +216,7 @@ public static partial class InterfaceApp
 
     public static ulong Iteration => NeuronApp.Iterations;
     public static decimal AvgError => NeuronApp.CurrentAvgError;
+    public static IList<decimal> AvgErrorList => NeuronApp.AvgErrorList;
 
     public static void Stop()
     {

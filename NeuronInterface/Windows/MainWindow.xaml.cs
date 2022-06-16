@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -15,16 +17,12 @@ namespace NeuronInterface.Windows;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private ErrorWindow _errorWindow;
     public MainWindow()
     {
         InitializeComponent();
         InterfaceApp.StateChangedEvent += StateChangedEvent;
-    }
-
-    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-    {
-        var regex = new Regex("[^0-9.-]+");
-        e.Handled = regex.IsMatch(e.Text);
+        _errorWindow = new ErrorWindow();
     }
 
     private void PositiveNumber(object sender, TextCompositionEventArgs e)
@@ -163,9 +161,9 @@ public partial class MainWindow : Window
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
         InterfaceApp.Reset();
+        UpdateText();
         MainPlot.Plot.Clear();
         MainPlot.Refresh();
-        Reset.IsEnabled = false;
     }
 
     private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
@@ -181,6 +179,7 @@ public partial class MainWindow : Window
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = false;
                 NextStep.IsEnabled = false;
+                ErrorGraph.IsEnabled = false;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -194,6 +193,7 @@ public partial class MainWindow : Window
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = true;
                 NextStep.IsEnabled = true;
+                ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -207,6 +207,7 @@ public partial class MainWindow : Window
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = false;
                 NextStep.IsEnabled = true;
+                ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = true;
                 StopCondition.IsEnabled = true;
                 LearningRate.IsEnabled = true;
@@ -220,6 +221,7 @@ public partial class MainWindow : Window
                 StopSolve.IsEnabled = true;
                 Reset.IsEnabled = false;
                 NextStep.IsEnabled = false;
+                ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -246,6 +248,8 @@ public partial class MainWindow : Window
 
         Iteration.Text = InterfaceApp.Iteration.ToString();
         CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
+
+        _errorWindow.UpdateErrorPlot();
 
         Plot();
     }
@@ -274,5 +278,10 @@ public partial class MainWindow : Window
         InterfaceApp.LoadFromJson(FileDialog.FileName);
 
         UpdateText();
+    }
+
+    private void ErrorGraph_Click(object sender, RoutedEventArgs e)
+    {
+        _errorWindow.Show();
     }
 }

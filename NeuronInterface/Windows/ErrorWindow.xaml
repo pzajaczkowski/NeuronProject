@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NeuronInterface.Windows"
         mc:Ignorable="d"
-        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterOwner"
+        Closing="Window_Closing"
         Title="ErrorWindow" Height="450" Width="800">
     <Grid>
         <WpfPlot Name="ErrorPlot" />

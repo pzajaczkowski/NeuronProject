@@ -27,8 +27,8 @@
         <Button x:Name="Reset" Content="Reset"
                 HorizontalAlignment="Left" Margin="20,255,0,0" VerticalAlignment="Top" Height="40" Width="131"
                 IsEnabled="False" Click="Reset_Click" />
-        <Button x:Name="MainGraph" Content="Wykres Błędu"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,300,0,0" />
+        <Button x:Name="ErrorGraph" Content="Wykres Błędu"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,300,0,0" Click="ErrorGraph_Click" />
 
         <Label x:Name="NeuronTypeLabel" Content="Typ neuronu:"
                HorizontalAlignment="Left" Margin="20,345,0,0" VerticalAlignment="Top" Height="30" Width="83"
