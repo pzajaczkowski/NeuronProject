@@ -14,7 +14,7 @@
         <Button x:Name="Solve" Content="Rozwiąż (auto)" HorizontalAlignment="Left" Margin="20,120,0,0" VerticalAlignment="Top" Height="40" Width="131" Click="Solve_Click"/>
         <Button x:Name="StopSolve" Content="Stop" HorizontalAlignment="Left" Margin="20,165,0,0" VerticalAlignment="Top" Height="40" Width="131"/>
         <Button x:Name="NextStep" Content="Następny krok" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,210,0,0" Click="NextStep_Click"/>
-        <Button x:Name="SaveAndExit" Content="Zapisz i wyjdź" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,549,0,0"/>
+        <Button x:Name="SaveAndExit" Content="Zapisz i wyjdź" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,549,0,0" Click="SaveAndExit_Click"/>
         <ComboBox x:Name="NeuronType" HorizontalAlignment="Left" Margin="20,327,0,0" VerticalAlignment="Top" Width="131" Height="25" SelectedIndex="0" SelectionChanged="NeuronType_SelectionChanged">
             <ComboBoxItem Content="Perceptron"/>
             <ComboBoxItem Content="Adaline"/>
@@ -26,7 +26,7 @@
         </ComboBox>
         <Label x:Name="StopConditionLabel" Content="Warunek Zatrzymania:" HorizontalAlignment="Left" Margin="20,352,0,0" VerticalAlignment="Top" Height="30" Width="131"/>
         <Button x:Name="MainGraph" Content="Wykres Błędu" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,255,0,0"/>
-        <Button x:Name="Load" Content="Wczytaj" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,504,0,0"/>
+        <Button x:Name="Load" Content="Wczytaj" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40" Width="131" Margin="20,504,0,0" Click="Load_Click"/>
         <Label x:Name="LearningRateLabel" Content="Współczynnik uczenia:" HorizontalAlignment="Left" Margin="20,432,0,0" VerticalAlignment="Top" Height="30" Width="131" Visibility="Hidden"/>
         <TextBox PreviewTextInput="PositiveNumber" x:Name="StopConditionTextBox" HorizontalAlignment="Left" Margin="20,412,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="131" Height="20"/>
         <TextBox x:Name="LearningRate" HorizontalAlignment="Left" Margin="20,462,0,0" TextWrapping="Wrap" Text="0.1" VerticalAlignment="Top" Width="131" Height="20" Visibility="Hidden"/>

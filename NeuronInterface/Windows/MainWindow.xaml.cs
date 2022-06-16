@@ -167,4 +167,14 @@ public partial class MainWindow : Window
         Load.IsEnabled = state;
         SaveAndExit.IsEnabled = state;
     }
+
+    private void SaveAndExit_Click(object sender, RoutedEventArgs e)
+    {
+        InterfaceApp.SaveToJson();
+    }
+
+    private void Load_Click(object sender, RoutedEventArgs e)
+    {
+        InterfaceApp.LoadFromJson();
+    }
 }
