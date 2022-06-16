@@ -229,15 +229,21 @@ public partial class MainWindow : Window
 
     private void UpdateText()
     {
+        var culture = CultureInfo.GetCultureInfo("en-US");
         NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
 
         StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
-            ? InterfaceApp.MaxError.ToString(CultureInfo.GetCultureInfo("en-US"))
+            ? InterfaceApp.MaxError.ToString(culture)
             : InterfaceApp.IterationStep.ToString();
         Iteration.Text = InterfaceApp.Iteration.ToString();
 
         if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
-            LearningRate.Text = InterfaceApp.LearningRate.ToString(CultureInfo.GetCultureInfo("en-US"));
+            LearningRate.Text = InterfaceApp.LearningRate.ToString(culture);
+
+        Iteration.Text = InterfaceApp.Iteration.ToString();
+        CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
+
+        //Plot();
     }
 
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)

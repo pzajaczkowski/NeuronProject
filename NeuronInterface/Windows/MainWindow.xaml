@@ -75,14 +75,14 @@
         <TextBox x:Name="CurrentError"
                  HorizontalAlignment="Left" Margin="300,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="131"
                  Height="20"
-                 IsReadOnly="True" Text="0.1" />
+                 IsReadOnly="True" Text="0" />
 
         <Label x:Name="IterationLabel" Content="Iteracja:"
                HorizontalAlignment="Left" Margin="444,15,0,0" VerticalAlignment="Top" Height="30" Width="131" />
         <TextBox x:Name="Iteration"
                  HorizontalAlignment="Left" Margin="498,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="131"
                  Height="20"
-                 IsReadOnly="True" Text="0.1" />
+                 IsReadOnly="True" Text="0" />
 
         <WpfPlot Name="MainPlot" Margin="202,50,60,45" />
     </Grid>

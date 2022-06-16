@@ -26,7 +26,7 @@ public class NeuronApp
     public IList<Data> Data => _data.AsReadOnly();
     public IList<Data> Results => _results.AsReadOnly();
     public IList<decimal> AvgErrorList => _error.AsReadOnly();
-    public decimal CurrentAvgError => _error.Last();
+    public decimal CurrentAvgError => _error.Count > 0 ? _error.Last() : CalculateWithAvgError();
 
     public ulong Iterations { get; private set; }
 

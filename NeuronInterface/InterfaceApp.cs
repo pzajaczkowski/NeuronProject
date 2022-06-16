@@ -60,8 +60,6 @@ public static partial class InterfaceApp
             LearningRate = app.LearningRate;
             NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
                 app.NeuronApp.Error, app.NeuronApp.Results);
-
-            State = STATE.Waiting;
         }
         catch (FileNotFoundException e)
         {
@@ -73,6 +71,8 @@ public static partial class InterfaceApp
             //TODO
             Console.WriteLine(e);
         }
+
+        State = STATE.Waiting;
     }
 
     private class NeuronAppJson
@@ -162,6 +162,7 @@ public static partial class InterfaceApp
         private set
         {
             _state = value;
+
             StateChangedEvent?.Invoke(null, _state);
         }
     }
