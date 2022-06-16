@@ -175,7 +175,7 @@ public static partial class InterfaceApp
         }
     }
 
-    public static bool Running => State is not STATE.Waiting or STATE.Empty;
+    public static bool Running => State != STATE.Waiting && State != STATE.Empty;
     private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
     public static decimal MaxError { get; set; }
