@@ -108,6 +108,11 @@ public static partial class InterfaceApp
     public enum STATE
     {
         /// <summary>
+        ///     Oczekiwania na dodanie danych.
+        /// </summary>
+        Empty,
+
+        /// <summary>
         ///     Oczekiwania na pierwszą iterację uczenia się.
         /// </summary>
         Waiting,
@@ -116,12 +121,16 @@ public static partial class InterfaceApp
         ///     Uczenie zatrzymane.
         /// </summary>
         Stopped,
+
+        /// <summary>
+        ///     Stan uczenia. Brak możliwości wykonywania akcji poza próby zatrzymania.
+        /// </summary>
         Running
     }
 
     private static MODE _mode = MODE.Error;
     private static NEURON _neuron = NEURON.Perceptron;
-    private static STATE _state = STATE.Waiting;
+    private static STATE _state = STATE.Empty;
 
     public static EventHandler<STATE>? StateChangedEvent;
 
@@ -215,16 +224,18 @@ public static partial class InterfaceApp
         try
         {
             NeuronApp.LoadDataFromFile(path);
+
+            State = STATE.Waiting;
         }
         catch (FileNotFoundException e)
         {
             //TODO
-            throw;
+            Console.WriteLine(e);
         }
         catch (JsonException e)
         {
             //TODO
-            throw;
+            Console.WriteLine(e);
         }
     }
 

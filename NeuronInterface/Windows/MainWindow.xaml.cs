@@ -172,16 +172,28 @@ public partial class MainWindow : Window
     {
         switch (e)
         {
+            case InterfaceApp.STATE.Empty:
+                LoadData.IsEnabled = true;
+                EditData.IsEnabled = true;
+                Solve.IsEnabled = false;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = false;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = true;
+                SaveAndExit.IsEnabled = true;
+                break;
             case InterfaceApp.STATE.Stopped:
                 LoadData.IsEnabled = false;
                 EditData.IsEnabled = false;
                 Solve.IsEnabled = true;
-                StopSolve.IsEnabled = false;
+                StopSolve.IsEnabled = true;
                 Reset.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
-                Load.IsEnabled = false;
+                Load.IsEnabled = true;
                 SaveAndExit.IsEnabled = true;
                 break;
             case InterfaceApp.STATE.Waiting:
@@ -200,8 +212,8 @@ public partial class MainWindow : Window
                 LoadData.IsEnabled = false;
                 EditData.IsEnabled = false;
                 Solve.IsEnabled = false;
-                StopSolve.IsEnabled = false;
-                Reset.IsEnabled = true;
+                StopSolve.IsEnabled = true;
+                Reset.IsEnabled = false;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
