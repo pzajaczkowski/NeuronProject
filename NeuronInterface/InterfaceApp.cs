@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NeuronProject;
 using Newtonsoft.Json;
+using JsonException = System.Text.Json.JsonException;
 
 namespace NeuronInterface;
 
@@ -211,7 +212,20 @@ public static partial class InterfaceApp
 
     public static void LoadDataFromFile(string path)
     {
-        NeuronApp.LoadDataFromFile(path);
+        try
+        {
+            NeuronApp.LoadDataFromFile(path);
+        }
+        catch (FileNotFoundException e)
+        {
+            //TODO
+            throw;
+        }
+        catch (JsonException e)
+        {
+            //TODO
+            throw;
+        }
     }
 
     public static void SolveStep()

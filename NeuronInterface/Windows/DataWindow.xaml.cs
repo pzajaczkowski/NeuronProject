@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
@@ -53,7 +55,22 @@ public partial class DataWindow : Window
 
     private void Delete_Click(object sender, RoutedEventArgs e)
     {
-        _dataGridCollection.Remove((DataItem)DataGrid.SelectedItem);
+        var selectedItems = DataGrid.SelectedItems;
+
+        var list = new List<DataItem>();
+
+        foreach (var selectedItem in selectedItems)
+            try
+            {
+                var item = (DataItem)selectedItem;
+                list.Add(item);
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+        foreach (var selectedItem in list.ToList())
+            _dataGridCollection.Remove(selectedItem);
     }
 
     private void Save_Click(object sender, RoutedEventArgs e)
@@ -64,8 +81,8 @@ public partial class DataWindow : Window
         {
             var data = new Data();
 
-            if (decimal.TryParse(dataItem.Input1, out var dec1) && 
-                decimal.TryParse(dataItem.Input2, out var dec2) && 
+            if (decimal.TryParse(dataItem.Input1, out var dec1) &&
+                decimal.TryParse(dataItem.Input2, out var dec2) &&
                 decimal.TryParse(dataItem.Output, out var dec3))
             {
                 data.Input = new List<decimal> { dec1, dec2 };
@@ -81,6 +98,7 @@ public partial class DataWindow : Window
         }
 
         InterfaceApp.LoadDataFromDataList(datalist);
+        Close();
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
