@@ -180,6 +180,7 @@ public partial class MainWindow : Window
                 Solve.IsEnabled = false;
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = false;
+                NextStep.IsEnabled = false;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -192,6 +193,7 @@ public partial class MainWindow : Window
                 Solve.IsEnabled = true;
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = true;
+                NextStep.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -204,6 +206,7 @@ public partial class MainWindow : Window
                 Solve.IsEnabled = true;
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = false;
+                NextStep.IsEnabled = true;
                 NeuronType.IsEnabled = true;
                 StopCondition.IsEnabled = true;
                 LearningRate.IsEnabled = true;
@@ -216,6 +219,7 @@ public partial class MainWindow : Window
                 Solve.IsEnabled = false;
                 StopSolve.IsEnabled = true;
                 Reset.IsEnabled = false;
+                NextStep.IsEnabled = false;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
