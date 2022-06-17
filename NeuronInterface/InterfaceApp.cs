@@ -53,6 +53,9 @@ public static partial class InterfaceApp
                 TypeNameHandling = TypeNameHandling.All
             });
 
+            if (app.NeuronApp == null)
+                throw new JsonException();
+
             _mode = app.Mode;
             _neuron = app.NeuronMode;
             MaxError = app.MaxError;
@@ -61,15 +64,29 @@ public static partial class InterfaceApp
             NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
                 app.NeuronApp.Error, app.NeuronApp.Results);
         }
-        catch (FileNotFoundException e)
+        catch (FileNotFoundException)
         {
-            //TODO
-            Console.WriteLine(e);
         }
-        catch (JsonException e)
+        catch (Exception e)
         {
-            //TODO
-            Console.WriteLine(e);
+            if (e is not (JsonException or NullReferenceException or JsonSerializationException))
+                throw;
+
+            ErrorMessage = "Niepoprawny format danych";
+            State = STATE.Error;
+            return;
+        }
+
+        if (AvgError == 0)
+        {
+            State = STATE.Finished;
+            return;
+        }
+
+        if (Iteration > 0)
+        {
+            State = STATE.Stopped;
+            return;
         }
 
         State = STATE.Waiting;
@@ -145,7 +162,9 @@ public static partial class InterfaceApp
         /// <summary>
         ///     Stan uczenia. Brak możliwości wykonywania akcji poza próby zatrzymania.
         /// </summary>
-        Running
+        Running,
+        Error,
+        Finished
     }
 
     private static MODE _mode = MODE.Error;
@@ -155,6 +174,7 @@ public static partial class InterfaceApp
     public static EventHandler<STATE>? StateChangedEvent;
 
     private static int _loadingTry;
+    public static string ErrorMessage { get; private set; } = string.Empty;
 
     public static STATE State
     {
@@ -184,9 +204,6 @@ public static partial class InterfaceApp
         get => _neuron;
         set
         {
-            if (Running)
-                throw new Exception("Nie można zmienić neuronu w czasie działania aplikacji");
-
             _neuron = value;
 
             NeuronApp.Neuron = value switch
@@ -206,7 +223,9 @@ public static partial class InterfaceApp
         }
     }
 
-    public static bool Running => State != STATE.Waiting && State != STATE.Empty;
+    public static bool Running => State != STATE.Waiting && State != STATE.Empty && State != STATE.Error &&
+                                  State != STATE.Finished;
+
     private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
     public static decimal MaxError { get; set; }
@@ -257,23 +276,25 @@ public static partial class InterfaceApp
         try
         {
             NeuronApp.LoadDataFromFile(path);
-
             State = STATE.Waiting;
         }
-        catch (FileNotFoundException e)
+        catch (FileNotFoundException)
         {
-            //TODO
-            Console.WriteLine(e);
         }
         catch (JsonException e)
         {
-            //TODO
+            ErrorMessage = "Niepoprawny format danych";
+            State = STATE.Error;
             Console.WriteLine(e);
         }
         catch (Exception e)
         {
             if (_loadingTry > 1)
-                throw;
+            {
+                ErrorMessage = "Niepoprawny format danych";
+                _loadingTry = 0;
+                return;
+            }
 
             switch (e)
             {
@@ -284,7 +305,9 @@ public static partial class InterfaceApp
                     Neuron = NEURON.Adaline;
                     break;
                 default:
-                    throw;
+                    ErrorMessage = "Niepoprawny format danych";
+                    _loadingTry = 0;
+                    return;
             }
 
             LoadDataFromFile(path);
@@ -329,7 +352,10 @@ public static partial class InterfaceApp
                 throw new ArgumentOutOfRangeException();
         }
 
-        State = STATE.Stopped;
+        if (AvgError > 0)
+            State = STATE.Stopped;
+
+        State = STATE.Finished;
     }
 
     private static void SolveWithMaxError()

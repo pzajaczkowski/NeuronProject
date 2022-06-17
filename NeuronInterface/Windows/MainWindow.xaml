@@ -84,6 +84,9 @@
                  Height="20"
                  IsReadOnly="True" Text="0" />
 
+        <Label x:Name="ErrorMessage" Content="" 
+               HorizontalAlignment="Left" Margin="668,17,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.053,-0.114" Width="472"/>
+
         <WpfPlot Name="MainPlot" Margin="202,50,60,45" />
     </Grid>
 </Window>

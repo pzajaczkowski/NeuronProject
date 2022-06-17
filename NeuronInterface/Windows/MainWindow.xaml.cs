@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -17,7 +15,8 @@ namespace NeuronInterface.Windows;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private ErrorWindow _errorWindow;
+    private readonly ErrorWindow _errorWindow;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -104,10 +103,8 @@ public partial class MainWindow : Window
     private void Solve_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        //EnableElements(false);
         InterfaceApp.Solve();
         Plot();
-        //EnableElements(true);
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -124,7 +121,6 @@ public partial class MainWindow : Window
     private void NextStep_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        //EnableElements(false);
         InterfaceApp.SolveStep();
 
         UpdateText();
@@ -160,6 +156,7 @@ public partial class MainWindow : Window
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
+        Initialize();
         InterfaceApp.Reset();
         UpdateText();
         MainPlot.Plot.Clear();
@@ -179,7 +176,7 @@ public partial class MainWindow : Window
                 StopSolve.IsEnabled = false;
                 Reset.IsEnabled = false;
                 NextStep.IsEnabled = false;
-                ErrorGraph.IsEnabled = false;
+                ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
                 LearningRate.IsEnabled = false;
@@ -228,6 +225,23 @@ public partial class MainWindow : Window
                 Load.IsEnabled = false;
                 SaveAndExit.IsEnabled = false;
                 break;
+            case InterfaceApp.STATE.Finished:
+                LoadData.IsEnabled = false;
+                EditData.IsEnabled = false;
+                Solve.IsEnabled = false;
+                StopSolve.IsEnabled = false;
+                Reset.IsEnabled = true;
+                NextStep.IsEnabled = false;
+                ErrorGraph.IsEnabled = true;
+                NeuronType.IsEnabled = false;
+                StopCondition.IsEnabled = false;
+                StopConditionTextBox.IsEnabled = false;
+                LearningRate.IsEnabled = false;
+                Load.IsEnabled = true;
+                SaveAndExit.IsEnabled = true;
+                break;
+            case InterfaceApp.STATE.Error:
+                break;
             default:
                 throw new Exception("On state changed event");
         }
@@ -235,6 +249,14 @@ public partial class MainWindow : Window
 
     private void UpdateText()
     {
+        if (InterfaceApp.State == InterfaceApp.STATE.Error)
+        {
+            ErrorMessage.Content = InterfaceApp.ErrorMessage;
+            return;
+        }
+            
+        ErrorMessage.Content = string.Empty;
+
         var culture = CultureInfo.GetCultureInfo("en-US");
         NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
 
@@ -249,8 +271,8 @@ public partial class MainWindow : Window
         Iteration.Text = InterfaceApp.Iteration.ToString();
         CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
 
-        _errorWindow.UpdateErrorPlot();
 
+        _errorWindow.UpdateErrorPlot();
         Plot();
     }
 
