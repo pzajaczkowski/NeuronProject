@@ -10,110 +10,6 @@ namespace NeuronInterface;
 
 public static partial class InterfaceApp
 {
-    public static void SaveToJson(string path)
-    {
-        if (path == string.Empty)
-            return;
-
-        var app = new AppJson
-        {
-            IterationStep = IterationStep,
-            LearningRate = LearningRate,
-            MaxError = MaxError,
-            NeuronApp = new NeuronAppJson
-            {
-                Data = NeuronApp.Data.ToList(),
-                Error = NeuronApp.AvgErrorList.ToList(),
-                Results = NeuronApp.Results.ToList(),
-                Neuron = NeuronApp.Neuron,
-                Iterations = NeuronApp.Iterations
-            },
-            NeuronMode = _neuron,
-            Mode = _mode
-        };
-
-        var json = JsonConvert.SerializeObject(app, new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        });
-
-        File.WriteAllText(path, json);
-    }
-
-    public static void LoadFromJson(string path)
-    {
-        if (path == string.Empty)
-            return;
-
-        try
-        {
-            var json = File.ReadAllText(path);
-            var app = JsonConvert.DeserializeObject<AppJson>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            });
-
-            if (app.NeuronApp == null)
-                throw new JsonException();
-
-            _mode = app.Mode;
-            _neuron = app.NeuronMode;
-            MaxError = app.MaxError;
-            IterationStep = app.IterationStep;
-            LearningRate = app.LearningRate;
-            NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
-                app.NeuronApp.Error, app.NeuronApp.Results);
-        }
-        catch (FileNotFoundException)
-        {
-        }
-        catch (Exception e)
-        {
-            if (e is not (JsonException or NullReferenceException or JsonSerializationException))
-                throw;
-
-            ErrorMessage = "Niepoprawny format danych";
-            State = STATE.Error;
-            return;
-        }
-
-        if (AvgError == 0)
-        {
-            State = STATE.Finished;
-            return;
-        }
-
-        if (Iteration > 0)
-        {
-            State = STATE.Stopped;
-            return;
-        }
-
-        State = STATE.Waiting;
-    }
-
-    private class NeuronAppJson
-    {
-        public List<Data> Data { get; init; }
-        public List<decimal> Error { get; init; }
-        public List<Data> Results { get; init; }
-        public Neuron Neuron { get; init; }
-        public ulong Iterations { get; init; }
-    }
-
-    private class AppJson
-    {
-        public MODE Mode { get; init; }
-        public NEURON NeuronMode { get; init; }
-        public NeuronAppJson NeuronApp { get; init; }
-        public decimal MaxError { get; init; }
-        public ulong IterationStep { get; init; }
-        public decimal LearningRate { get; init; }
-    }
-}
-
-public static partial class InterfaceApp
-{
     /// <summary>
     ///     Tryb uczenia neuronu, warunek zatrzymania się uczenia.
     /// </summary>
@@ -163,18 +59,29 @@ public static partial class InterfaceApp
         ///     Stan uczenia. Brak możliwości wykonywania akcji poza próby zatrzymania.
         /// </summary>
         Running,
+
+        /// <summary>
+        ///     Stan błędu. Wyświetla komunikat z treścią błedu.
+        /// </summary>
         Error,
+
+        /// <summary>
+        ///     Percepton nauczony. Brak możliwości dalszego uczenia.
+        /// </summary>
         Finished
     }
 
+    // Początkowe stany
     private static MODE _mode = MODE.Error;
     private static NEURON _neuron = NEURON.Perceptron;
     private static STATE _state = STATE.Empty;
 
     public static EventHandler<STATE>? StateChangedEvent;
 
+    /// <summary>
+    ///     Używane do automatycznego rozpoznawania typu neuronu podczas wczytywania danych.
+    /// </summary>
     private static int _loadingTry;
-    public static string ErrorMessage { get; private set; } = string.Empty;
 
     public static STATE State
     {
@@ -223,18 +130,42 @@ public static partial class InterfaceApp
         }
     }
 
-    public static bool Running => State != STATE.Waiting && State != STATE.Empty && State != STATE.Error &&
-                                  State != STATE.Finished;
+    /// <summary>
+    ///     Opis błędu. Używać, gdy State == Error.
+    /// </summary>
+    public static string ErrorMessage { get; private set; } = string.Empty;
 
+    /// <summary>
+    ///     Warunek zatrzymania. Maksymalny błąd neuronu.
+    /// </summary>
+    public static decimal MaxError { get; set; }
+
+    /// <summary>
+    ///     Warunek zatrzymania. Ilość iteracji.
+    /// </summary>
+    public static ulong IterationStep { get; set; }
+
+    public static decimal LearningRate { get; set; } = new(.1);
     private static NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
-    public static decimal MaxError { get; set; }
-    public static ulong IterationStep { get; set; }
-    public static decimal LearningRate { get; set; } = new(.1);
+    /// <summary>
+    ///     Lista z danymi do nauczania neuronu.
+    /// </summary>
     public static IList<Data> Data => NeuronApp.Data;
 
+    /// <summary>
+    ///     Numer aktualnej iteracji.
+    /// </summary>
     public static ulong Iteration => NeuronApp.Iterations;
+
+    /// <summary>
+    ///     Aktualny bład neuronu.
+    /// </summary>
     public static decimal AvgError => NeuronApp.CurrentAvgError;
+
+    /// <summary>
+    ///     Lista średniego błędu dla każdej iteracji.
+    /// </summary>
     public static IList<decimal> AvgErrorList => NeuronApp.AvgErrorList;
 
     public static void Stop()
@@ -242,6 +173,12 @@ public static partial class InterfaceApp
         State = STATE.Stopped;
     }
 
+    /// <summary>
+    ///     Odnajduje dwa punkty, które oznaczają linię, która oddziela zbiory punktów.
+    /// </summary>
+    /// <returns>
+    ///     (Punkt1(x, y), Punkt2(x, y))
+    /// </returns>
     public static ((double, double), (double, double)) GetLine()
     {
         var min = NeuronApp.Data.Aggregate((min, item) => item.Input[0] < min.Input[0] ? item : min);
@@ -317,6 +254,9 @@ public static partial class InterfaceApp
         _loadingTry = 0;
     }
 
+    /// <summary>
+    ///     Wykonuje jedną iterację nauczania.
+    /// </summary>
     public static void SolveStep()
     {
         State = STATE.Running;
@@ -331,6 +271,9 @@ public static partial class InterfaceApp
         State = STATE.Stopped;
     }
 
+    /// <summary>
+    ///     Wykonuje nauczanie do osiągnięcia podanego warunku zatrzymania.
+    /// </summary>
     public static void Solve()
     {
         State = STATE.Running;
@@ -349,7 +292,7 @@ public static partial class InterfaceApp
                 SolveWithIterationStep();
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new Exception("how?");
         }
 
         if (AvgError > 0)
@@ -374,5 +317,118 @@ public static partial class InterfaceApp
     {
         NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
         State = STATE.Waiting;
+    }
+
+    /// <summary>
+    ///     Zapisuje stan całej aplikacji pliku.
+    /// </summary>
+    /// <param name="path">ścieżka do pliku</param>
+    public static void SaveToJson(string path)
+    {
+        if (path == string.Empty)
+            return;
+
+        var app = new AppJson
+        {
+            IterationStep = IterationStep,
+            LearningRate = LearningRate,
+            MaxError = MaxError,
+            NeuronApp = new NeuronAppJson
+            {
+                Data = NeuronApp.Data.ToList(),
+                Error = NeuronApp.AvgErrorList.ToList(),
+                Results = NeuronApp.Results.ToList(),
+                Neuron = NeuronApp.Neuron,
+                Iterations = NeuronApp.Iterations
+            },
+            NeuronMode = _neuron,
+            Mode = _mode
+        };
+
+        var json = JsonConvert.SerializeObject(app, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        });
+
+        File.WriteAllText(path, json);
+    }
+
+    /// <summary>
+    ///     Wczytuje stan całej aplikacji z pliku.
+    /// </summary>
+    /// <param name="path">ścieżka do pliku</param>
+    public static void LoadFromJson(string path)
+    {
+        if (path == string.Empty)
+            return;
+
+        try
+        {
+            var json = File.ReadAllText(path);
+            var app = JsonConvert.DeserializeObject<AppJson>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            if (app.NeuronApp == null)
+                throw new JsonException();
+
+            _mode = app.Mode;
+            _neuron = app.NeuronMode;
+            MaxError = app.MaxError;
+            IterationStep = app.IterationStep;
+            LearningRate = app.LearningRate;
+            NeuronApp = new NeuronApp(app.NeuronApp.Neuron, app.NeuronApp.Iterations, app.NeuronApp.Data,
+                app.NeuronApp.Error, app.NeuronApp.Results);
+        }
+        catch (FileNotFoundException)
+        {
+        }
+        catch (Exception e)
+        {
+            if (e is not (JsonException or NullReferenceException or JsonSerializationException))
+                throw;
+
+            ErrorMessage = "Niepoprawny format danych";
+            State = STATE.Error;
+            return;
+        }
+
+        if (AvgError == 0)
+        {
+            State = STATE.Finished;
+            return;
+        }
+
+        if (Iteration > 0)
+        {
+            State = STATE.Stopped;
+            return;
+        }
+
+        State = STATE.Waiting;
+    }
+}
+
+// Klasy do wczytywania całej aplikacji
+public static partial class InterfaceApp
+{
+    private class NeuronAppJson
+    {
+        public List<Data> Data { get; init; }
+        public List<decimal> Error { get; init; }
+        public List<Data> Results { get; init; }
+        public Neuron Neuron { get; init; }
+        public ulong Iterations { get; init; }
+    }
+
+    private class AppJson
+    {
+        public MODE Mode { get; init; }
+        public NEURON NeuronMode { get; init; }
+        public NeuronAppJson NeuronApp { get; init; }
+        public decimal MaxError { get; init; }
+        public ulong IterationStep { get; init; }
+        public decimal LearningRate { get; init; }
     }
 }
