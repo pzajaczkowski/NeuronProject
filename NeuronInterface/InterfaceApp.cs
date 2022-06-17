@@ -113,6 +113,9 @@ public static partial class InterfaceApp
         {
             _neuron = value;
 
+            _state = STATE.Empty;
+            ResetData();
+
             NeuronApp.Neuron = value switch
             {
                 NEURON.Perceptron => new PerceptronNeuron
@@ -128,6 +131,11 @@ public static partial class InterfaceApp
                 _ => throw new Exception("how?????")
             };
         }
+    }
+
+    private static void ResetData()
+    {
+        NeuronApp.ClearData();
     }
 
     /// <summary>

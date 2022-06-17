@@ -28,6 +28,13 @@ public class NeuronApp
     public IList<decimal> AvgErrorList => _error.AsReadOnly();
     public decimal CurrentAvgError => _error.Count > 0 ? _error.Last() : CalculateWithAvgError();
 
+    public void ClearData()
+    {
+        _data.Clear();
+        _error.Clear();
+        _results.Clear();
+        Iterations = 0;
+    } 
     public ulong Iterations { get; private set; }
 
     public void LoadDataFromDataList(List<Data> data)

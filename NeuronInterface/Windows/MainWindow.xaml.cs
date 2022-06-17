@@ -75,7 +75,9 @@ public partial class MainWindow : Window
     {
         var item = (ComboBoxItem)e.AddedItems[0];
 
-        if (item.Content.Equals("Perceptron") && LearningRate != null)
+        if (LearningRate != null && MessageBox.Show("Zmiana neuronu powoduje usunięcie danych.\n Czy chcesz kontynuować?", "Uwaga!",MessageBoxButton.YesNo) == MessageBoxResult.No) return;
+
+            if (item.Content.Equals("Perceptron") && LearningRate != null)
         {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
             LearningRate.Visibility = Visibility.Hidden;
@@ -167,7 +169,6 @@ public partial class MainWindow : Window
     private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
     {
         UpdateText();
-
         switch (e)
         {
             case InterfaceApp.STATE.Empty:
@@ -274,8 +275,13 @@ public partial class MainWindow : Window
             LearningRate.Text = InterfaceApp.LearningRate.ToString(culture);
 
         Iteration.Text = InterfaceApp.Iteration.ToString();
-        CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
 
+        if (InterfaceApp.State == InterfaceApp.STATE.Empty)
+        {
+            CurrentError.Text = "-";
+            return;
+        }
+        CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
 
         _errorWindow.UpdateErrorPlot();
         Plot();
