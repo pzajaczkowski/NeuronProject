@@ -179,6 +179,7 @@ public partial class MainWindow : Window
                 ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
+                StopConditionTextBox.IsEnabled = false;
                 LearningRate.IsEnabled = false;
                 Load.IsEnabled = true;
                 SaveAndExit.IsEnabled = true;
@@ -193,6 +194,7 @@ public partial class MainWindow : Window
                 ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
+                StopConditionTextBox.IsEnabled = false;
                 LearningRate.IsEnabled = false;
                 Load.IsEnabled = true;
                 SaveAndExit.IsEnabled = true;
@@ -207,6 +209,7 @@ public partial class MainWindow : Window
                 ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = true;
                 StopCondition.IsEnabled = true;
+                StopConditionTextBox.IsEnabled = true;
                 LearningRate.IsEnabled = true;
                 Load.IsEnabled = true;
                 SaveAndExit.IsEnabled = true;
@@ -221,6 +224,7 @@ public partial class MainWindow : Window
                 ErrorGraph.IsEnabled = true;
                 NeuronType.IsEnabled = false;
                 StopCondition.IsEnabled = false;
+                StopConditionTextBox.IsEnabled = false;
                 LearningRate.IsEnabled = false;
                 Load.IsEnabled = false;
                 SaveAndExit.IsEnabled = false;
