@@ -114,7 +114,9 @@ public static partial class InterfaceApp
             _neuron = value;
 
             _state = STATE.Empty;
-            ResetData();
+
+            if (_loadingTry == 0)
+                ResetData();
 
             NeuronApp.Neuron = value switch
             {
@@ -131,11 +133,6 @@ public static partial class InterfaceApp
                 _ => throw new Exception("how?????")
             };
         }
-    }
-
-    private static void ResetData()
-    {
-        NeuronApp.ClearData();
     }
 
     /// <summary>
@@ -176,6 +173,11 @@ public static partial class InterfaceApp
     /// </summary>
     public static IList<decimal> AvgErrorList => NeuronApp.AvgErrorList;
 
+    private static void ResetData()
+    {
+        NeuronApp.ClearData();
+    }
+
     public static void Stop()
     {
         State = STATE.Stopped;
@@ -205,61 +207,6 @@ public static partial class InterfaceApp
     private static decimal GetResultLinePoint(decimal x)
     {
         return -1 * (NeuronApp.Neuron.Bias + NeuronApp.Neuron.Weights[0] * x) / NeuronApp.Neuron.Weights[1];
-    }
-
-    public static void LoadDataFromDataList(List<Data> data)
-    {
-        if (State is STATE.Running or STATE.Stopped or STATE.Error)
-            throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
-
-        NeuronApp.LoadDataFromDataList(data);
-    }
-
-    public static void LoadDataFromFile(string path)
-    {
-        _loadingTry++;
-        try
-        {
-            NeuronApp.LoadDataFromFile(path);
-            State = STATE.Waiting;
-        }
-        catch (FileNotFoundException)
-        {
-        }
-        catch (JsonException e)
-        {
-            ErrorMessage = "Niepoprawny format danych";
-            State = STATE.Error;
-            Console.WriteLine(e);
-        }
-        catch (Exception e)
-        {
-            if (_loadingTry > 1)
-            {
-                ErrorMessage = "Niepoprawny format danych";
-                _loadingTry = 0;
-                return;
-            }
-
-            switch (e)
-            {
-                case NeuronApp.AdalineDataException:
-                    Neuron = NEURON.Perceptron;
-                    break;
-                case NeuronApp.PerceptronDataException:
-                    Neuron = NEURON.Adaline;
-                    break;
-                default:
-                    ErrorMessage = "Niepoprawny format danych";
-                    _loadingTry = 0;
-                    return;
-            }
-
-            LoadDataFromFile(path);
-            return;
-        }
-
-        _loadingTry = 0;
     }
 
     /// <summary>
@@ -337,6 +284,61 @@ public static partial class InterfaceApp
     {
         NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
         State = STATE.Waiting;
+    }
+
+    public static void LoadDataFromDataList(List<Data> data)
+    {
+        if (State is STATE.Running or STATE.Stopped or STATE.Error)
+            throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
+
+        NeuronApp.LoadDataFromDataList(data);
+    }
+
+    public static void LoadDataFromFile(string path)
+    {
+        _loadingTry++;
+        try
+        {
+            NeuronApp.LoadDataFromFile(path);
+            State = STATE.Waiting;
+        }
+        catch (FileNotFoundException)
+        {
+        }
+        catch (JsonException e)
+        {
+            ErrorMessage = "Niepoprawny format danych";
+            State = STATE.Error;
+            Console.WriteLine(e);
+        }
+        catch (Exception e)
+        {
+            if (_loadingTry > 1)
+            {
+                ErrorMessage = "Niepoprawny format danych";
+                _loadingTry = 0;
+                return;
+            }
+
+            switch (e)
+            {
+                case NeuronApp.AdalineDataException:
+                    Neuron = NEURON.Perceptron;
+                    break;
+                case NeuronApp.PerceptronDataException:
+                    Neuron = NEURON.Adaline;
+                    break;
+                default:
+                    ErrorMessage = "Niepoprawny format danych";
+                    _loadingTry = 0;
+                    return;
+            }
+
+            LoadDataFromFile(path);
+            return;
+        }
+
+        _loadingTry = 0;
     }
 
     /// <summary>
