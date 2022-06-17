@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using NeuronProject;
 using Newtonsoft.Json;
 using JsonException = System.Text.Json.JsonException;
@@ -82,6 +83,10 @@ public static partial class InterfaceApp
     ///     Używane do automatycznego rozpoznawania typu neuronu podczas wczytywania danych.
     /// </summary>
     private static int _loadingTry;
+
+    private static readonly Mutex _mutex = new();
+    private static Thread _calulationThread;
+    private static bool _stop;
 
     public static STATE State
     {
@@ -178,11 +183,6 @@ public static partial class InterfaceApp
         NeuronApp.ClearData();
     }
 
-    public static void Stop()
-    {
-        State = STATE.Stopped;
-    }
-
     /// <summary>
     ///     Odnajduje dwa punkty, które oznaczają linię, która oddziela zbiory punktów.
     /// </summary>
@@ -207,83 +207,6 @@ public static partial class InterfaceApp
     private static decimal GetResultLinePoint(decimal x)
     {
         return -1 * (NeuronApp.Neuron.Bias + NeuronApp.Neuron.Weights[0] * x) / NeuronApp.Neuron.Weights[1];
-    }
-
-    /// <summary>
-    ///     Wykonuje jedną iterację nauczania.
-    /// </summary>
-    public static void SolveStep()
-    {
-        State = STATE.Running;
-        if (Neuron == NEURON.Adaline)
-        {
-            var neuron = (AdalineNeuron)NeuronApp.Neuron;
-            neuron.LearningRate = LearningRate;
-        }
-
-        NeuronApp.Learn();
-
-        State = STATE.Stopped;
-    }
-
-    /// <summary>
-    ///     Wykonuje nauczanie do osiągnięcia podanego warunku zatrzymania.
-    /// </summary>
-    public static void Solve()
-    {
-        State = STATE.Running;
-        if (Neuron == NEURON.Adaline)
-        {
-            var neuron = (AdalineNeuron)NeuronApp.Neuron;
-            neuron.LearningRate = LearningRate;
-        }
-
-        switch (Mode)
-        {
-            case MODE.Error:
-                if (!SolveWithMaxError())
-                {
-                    State = STATE.Stopped;
-                    ErrorMessage = $"Nie udało się znaleźć rozwiązania po {Iteration} iteracjach";
-                    State = STATE.Error;
-                    return;
-                }
-
-                break;
-            case MODE.Iterations:
-                SolveWithIterationStep();
-                break;
-            default:
-                throw new Exception("how?");
-        }
-
-        State = AvgError > 0 ? STATE.Stopped : STATE.Finished;
-    }
-
-    private static bool SolveWithMaxError()
-    {
-        ulong it = 0;
-        while (NeuronApp.CalculateWithAvgError() > MaxError)
-        {
-            NeuronApp.Learn();
-
-            if (++it == 100000)
-                return false;
-        }
-
-        return true;
-    }
-
-    private static void SolveWithIterationStep()
-    {
-        for (ulong i = 0; i < IterationStep; i++)
-            NeuronApp.Learn();
-    }
-
-    public static void Reset()
-    {
-        NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
-        State = STATE.Waiting;
     }
 
     public static void LoadDataFromDataList(List<Data> data)
@@ -429,6 +352,121 @@ public static partial class InterfaceApp
         }
 
         State = STATE.Waiting;
+    }
+
+    /// <summary>
+    ///     Wykonuje jedną iterację nauczania.
+    /// </summary>
+    public static void SolveStep()
+    {
+        State = STATE.Running;
+        if (Neuron == NEURON.Adaline)
+        {
+            var neuron = (AdalineNeuron)NeuronApp.Neuron;
+            neuron.LearningRate = LearningRate;
+        }
+
+        NeuronApp.Learn();
+
+        State = STATE.Stopped;
+    }
+
+    /// <summary>
+    ///     Wykonuje nauczanie do osiągnięcia podanego warunku zatrzymania.
+    /// </summary>
+    public static void Solve()
+    {
+        State = STATE.Running;
+        if (Neuron == NEURON.Adaline)
+        {
+            var neuron = (AdalineNeuron)NeuronApp.Neuron;
+            neuron.LearningRate = LearningRate;
+        }
+
+        _calulationThread = Mode switch
+        {
+            MODE.Error => new Thread(SolveWithMaxError),
+            MODE.Iterations => new Thread(SolveWithIterationStep),
+            _ => throw new Exception("how?")
+        };
+
+        _calulationThread.Start();
+
+        //State = AvgError > 0 ? STATE.Stopped : STATE.Finished;
+    }
+
+    private static void SolveWithMaxError()
+    {
+        ulong it = 0;
+        while (NeuronApp.CalculateWithAvgError() > MaxError)
+        {
+            _mutex.WaitOne();
+
+            if (_stop)
+            {
+                _mutex.ReleaseMutex();
+                return;
+            }
+
+            NeuronApp.Learn();
+
+            _mutex.ReleaseMutex();
+
+            if (++it == 100000)
+                break;
+        }
+
+        if (AvgError <= MaxError)
+        {
+            State = STATE.Finished;
+            return;
+        }
+
+        State = STATE.Stopped;
+        ErrorMessage = $"Nie udało się znaleźć rozwiązania po {Iteration} iteracjach";
+        State = STATE.Error;
+    }
+
+    private static void SolveWithIterationStep()
+    {
+        for (ulong i = 0; i < IterationStep; i++)
+        {
+            _mutex.WaitOne();
+            if (_stop)
+            {
+                _mutex.ReleaseMutex();
+                return;
+            }
+
+            NeuronApp.Learn();
+            _mutex.ReleaseMutex();
+        }
+
+        if (AvgError == 0)
+        {
+            State = STATE.Finished;
+            return;
+        }
+
+        State = STATE.Stopped;
+    }
+
+    public static void Reset()
+    {
+        NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
+        State = STATE.Waiting;
+    }
+
+    public static void Stop()
+    {
+        _mutex.WaitOne();
+        _stop = true;
+        _mutex.ReleaseMutex();
+
+        _calulationThread.Join();
+
+        _stop = false;
+        State = STATE.Stopped;
     }
 }
 

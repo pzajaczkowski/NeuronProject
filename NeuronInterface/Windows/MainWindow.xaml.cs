@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Win32;
+using Color = System.Drawing.Color;
 
 namespace NeuronInterface.Windows;
 
@@ -75,9 +76,11 @@ public partial class MainWindow : Window
     {
         var item = (ComboBoxItem)e.AddedItems[0];
 
-        if (LearningRate != null && MessageBox.Show("Zmiana neuronu powoduje usunięcie danych.\n Czy chcesz kontynuować?", "Uwaga!",MessageBoxButton.YesNo) == MessageBoxResult.No) return;
+        if (LearningRate != null &&
+            MessageBox.Show("Zmiana neuronu powoduje usunięcie danych.\n Czy chcesz kontynuować?", "Uwaga!",
+                MessageBoxButton.YesNo) == MessageBoxResult.No) return;
 
-            if (item.Content.Equals("Perceptron") && LearningRate != null)
+        if (item.Content.Equals("Perceptron") && LearningRate != null)
         {
             InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
             LearningRate.Visibility = Visibility.Hidden;
@@ -161,107 +164,124 @@ public partial class MainWindow : Window
     {
         Initialize();
         InterfaceApp.Reset();
-        UpdateText();
-        MainPlot.Plot.Clear();
-        MainPlot.Refresh();
     }
 
     private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
     {
-        UpdateText();
-        switch (e)
-        {
-            case InterfaceApp.STATE.Empty:
-                LoadData.IsEnabled = true;
-                EditData.IsEnabled = true;
-                Solve.IsEnabled = false;
-                StopSolve.IsEnabled = false;
-                Reset.IsEnabled = false;
-                NextStep.IsEnabled = false;
-                ErrorGraph.IsEnabled = true;
-                NeuronType.IsEnabled = false;
-                StopCondition.IsEnabled = false;
-                StopConditionTextBox.IsEnabled = false;
-                LearningRate.IsEnabled = false;
-                Load.IsEnabled = true;
-                SaveAndExit.IsEnabled = true;
-                break;
-            case InterfaceApp.STATE.Stopped:
-                LoadData.IsEnabled = false;
-                EditData.IsEnabled = false;
-                Solve.IsEnabled = true;
-                StopSolve.IsEnabled = false;
-                Reset.IsEnabled = true;
-                NextStep.IsEnabled = true;
-                ErrorGraph.IsEnabled = true;
-                NeuronType.IsEnabled = false;
-                StopCondition.IsEnabled = false;
-                StopConditionTextBox.IsEnabled = false;
-                LearningRate.IsEnabled = false;
-                Load.IsEnabled = true;
-                SaveAndExit.IsEnabled = true;
-                break;
-            case InterfaceApp.STATE.Waiting:
-                LoadData.IsEnabled = true;
-                EditData.IsEnabled = true;
-                Solve.IsEnabled = true;
-                StopSolve.IsEnabled = false;
-                Reset.IsEnabled = false;
-                NextStep.IsEnabled = true;
-                ErrorGraph.IsEnabled = true;
-                NeuronType.IsEnabled = true;
-                StopCondition.IsEnabled = true;
-                StopConditionTextBox.IsEnabled = true;
-                LearningRate.IsEnabled = true;
-                Load.IsEnabled = true;
-                SaveAndExit.IsEnabled = true;
-                break;
-            case InterfaceApp.STATE.Running:
-                LoadData.IsEnabled = false;
-                EditData.IsEnabled = false;
-                Solve.IsEnabled = false;
-                StopSolve.IsEnabled = true;
-                Reset.IsEnabled = false;
-                NextStep.IsEnabled = false;
-                ErrorGraph.IsEnabled = true;
-                NeuronType.IsEnabled = false;
-                StopCondition.IsEnabled = false;
-                StopConditionTextBox.IsEnabled = false;
-                LearningRate.IsEnabled = false;
-                Load.IsEnabled = false;
-                SaveAndExit.IsEnabled = false;
-                break;
-            case InterfaceApp.STATE.Finished:
-                LoadData.IsEnabled = false;
-                EditData.IsEnabled = false;
-                Solve.IsEnabled = false;
-                StopSolve.IsEnabled = false;
-                Reset.IsEnabled = true;
-                NextStep.IsEnabled = false;
-                ErrorGraph.IsEnabled = true;
-                NeuronType.IsEnabled = false;
-                StopCondition.IsEnabled = false;
-                StopConditionTextBox.IsEnabled = false;
-                LearningRate.IsEnabled = false;
-                Load.IsEnabled = true;
-                SaveAndExit.IsEnabled = true;
-                break;
-            case InterfaceApp.STATE.Error:
-                break;
-            default:
-                throw new Exception("On state changed event");
-        }
+        Dispatcher.Invoke(() =>
+            {
+                UpdateText();
+                switch (e)
+                {
+                    case InterfaceApp.STATE.Empty:
+                        LoadData.IsEnabled = true;
+                        EditData.IsEnabled = true;
+                        Solve.IsEnabled = false;
+                        StopSolve.IsEnabled = false;
+                        Reset.IsEnabled = false;
+                        NextStep.IsEnabled = false;
+                        ErrorGraph.IsEnabled = true;
+                        NeuronType.IsEnabled = false;
+                        StopCondition.IsEnabled = false;
+                        StopConditionTextBox.IsEnabled = false;
+                        LearningRate.IsEnabled = false;
+                        Load.IsEnabled = true;
+                        SaveAndExit.IsEnabled = true;
+                        break;
+                    case InterfaceApp.STATE.Stopped:
+                        LoadData.IsEnabled = false;
+                        EditData.IsEnabled = false;
+                        Solve.IsEnabled = true;
+                        StopSolve.IsEnabled = false;
+                        Reset.IsEnabled = true;
+                        NextStep.IsEnabled = true;
+                        ErrorGraph.IsEnabled = true;
+                        NeuronType.IsEnabled = false;
+                        StopCondition.IsEnabled = false;
+                        StopConditionTextBox.IsEnabled = false;
+                        LearningRate.IsEnabled = false;
+                        Load.IsEnabled = true;
+                        SaveAndExit.IsEnabled = true;
+                        break;
+                    case InterfaceApp.STATE.Waiting:
+                        LoadData.IsEnabled = true;
+                        EditData.IsEnabled = true;
+                        Solve.IsEnabled = true;
+                        StopSolve.IsEnabled = false;
+                        Reset.IsEnabled = false;
+                        NextStep.IsEnabled = true;
+                        ErrorGraph.IsEnabled = true;
+                        NeuronType.IsEnabled = true;
+                        StopCondition.IsEnabled = true;
+                        StopConditionTextBox.IsEnabled = true;
+                        LearningRate.IsEnabled = true;
+                        Load.IsEnabled = true;
+                        SaveAndExit.IsEnabled = true;
+                        break;
+                    case InterfaceApp.STATE.Running:
+                        LoadData.IsEnabled = false;
+                        EditData.IsEnabled = false;
+                        Solve.IsEnabled = false;
+                        StopSolve.IsEnabled = true;
+                        Reset.IsEnabled = false;
+                        NextStep.IsEnabled = false;
+                        ErrorGraph.IsEnabled = true;
+                        NeuronType.IsEnabled = false;
+                        StopCondition.IsEnabled = false;
+                        StopConditionTextBox.IsEnabled = false;
+                        LearningRate.IsEnabled = false;
+                        Load.IsEnabled = false;
+                        SaveAndExit.IsEnabled = false;
+                        break;
+                    case InterfaceApp.STATE.Finished:
+                        LoadData.IsEnabled = false;
+                        EditData.IsEnabled = false;
+                        Solve.IsEnabled = false;
+                        StopSolve.IsEnabled = false;
+                        Reset.IsEnabled = true;
+                        NextStep.IsEnabled = false;
+                        ErrorGraph.IsEnabled = true;
+                        NeuronType.IsEnabled = false;
+                        StopCondition.IsEnabled = false;
+                        StopConditionTextBox.IsEnabled = false;
+                        LearningRate.IsEnabled = false;
+                        Load.IsEnabled = true;
+                        SaveAndExit.IsEnabled = true;
+                        break;
+                    case InterfaceApp.STATE.Error:
+                        break;
+                    default:
+                        throw new Exception("On state changed event");
+                }
+            }
+        );
     }
 
     private void UpdateText()
     {
-        if (InterfaceApp.State == InterfaceApp.STATE.Error)
-        {
-            ErrorMessage.Content = InterfaceApp.ErrorMessage;
-            return;
-        }
+        var black = new System.Windows.Media.Color { R = 0, B = 0, G = 0, A = 255 };
+        var red = new System.Windows.Media.Color { R = 255, B = 0, G = 0, A = 255 };
 
-        ErrorMessage.Content = string.Empty;
+        switch (InterfaceApp.State)
+        {
+            case InterfaceApp.STATE.Error:
+                ErrorMessage.Content = InterfaceApp.ErrorMessage;
+                ErrorMessage.Foreground
+                    = new SolidColorBrush(red);
+                return;
+            case InterfaceApp.STATE.Running:
+                ErrorMessage.Content = "Trwa liczenie";
+                ErrorMessage.Foreground
+                    = new SolidColorBrush(black);
+                return;
+            case InterfaceApp.STATE.Finished:
+                ErrorMessage.Content = "Odnaleziono rozwiązanie";
+                ErrorMessage.Foreground = new SolidColorBrush(black);
+                break;
+            default:
+                ErrorMessage.Content = string.Empty;
+                break;
+        }
 
         var culture = CultureInfo.GetCultureInfo("en-US");
         NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
@@ -269,6 +289,7 @@ public partial class MainWindow : Window
         StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
             ? InterfaceApp.MaxError.ToString(culture)
             : InterfaceApp.IterationStep.ToString();
+
         Iteration.Text = InterfaceApp.Iteration.ToString();
 
         if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
@@ -276,11 +297,6 @@ public partial class MainWindow : Window
 
         Iteration.Text = InterfaceApp.Iteration.ToString();
 
-        if (InterfaceApp.State == InterfaceApp.STATE.Empty)
-        {
-            CurrentError.Text = "-";
-            return;
-        }
         CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
 
         _errorWindow.UpdateErrorPlot();
