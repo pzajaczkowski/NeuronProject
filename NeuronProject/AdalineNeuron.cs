@@ -1,8 +1,8 @@
 ﻿namespace NeuronProject;
 
-internal class AdalineNeuron : Neuron
+public class AdalineNeuron : Neuron
 {
-    public decimal LearningRate { get; init; } = new(.01);
+    public decimal LearningRate { get; set; }
 
     protected override decimal ActivationFunction(decimal x)
     {
@@ -14,5 +14,7 @@ internal class AdalineNeuron : Neuron
         var result = Calculate();
 
         for (var i = 0; i < Weights.Count; i++) Weights[i] += LearningRate * (ExpectedOutput - result) * Inputs[i];
+
+        Bias += LearningRate * (ExpectedOutput - result);
     }
 }

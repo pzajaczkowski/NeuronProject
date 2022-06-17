@@ -1,6 +1,6 @@
 ﻿namespace NeuronProject;
 
-internal class RegularNeuron : Neuron
+public class PerceptronNeuron : Neuron
 {
     protected override decimal ActivationFunction(decimal x)
     {
@@ -14,6 +14,9 @@ internal class RegularNeuron : Neuron
         if (result == ExpectedOutput)
             return;
 
-        for (var i = 0; i < Weights.Count; i++) Weights[i] += Inputs[i] * ExpectedOutput;
+        for (var i = 0; i < Weights.Count; i++)
+            Weights[i] += Inputs[i] * ExpectedOutput;
+
+        Bias += ExpectedOutput;
     }
 }

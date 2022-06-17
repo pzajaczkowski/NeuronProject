@@ -1,0 +1,19 @@
+﻿<Window x:Class="NeuronInterface.Windows.DataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NeuronInterface.Windows"
+        mc:Ignorable="d"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterOwner"
+        Title="DataWindow" Height="397" Width="561">
+    <Grid>
+        <DataGrid x:Name="DataGrid" PreviewTextInput="NumberValidationTextBox" Margin="10,10,189,45">
+        </DataGrid>
+        <Button x:Name="Save" Content="Zapisz" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,57,30,0" Click="Save_Click"/>
+        <Button x:Name="Return" Content="Wróć" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,104,30,0" Click="Return_Click"/>
+        <Button x:Name="Delete" Content="Usuń" HorizontalAlignment="Right" VerticalAlignment="Top" Height="42" Width="120" Margin="0,10,30,0" Click="Delete_Click"/>
+
+    </Grid>
+</Window>
