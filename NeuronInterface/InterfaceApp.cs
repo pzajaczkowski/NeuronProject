@@ -201,7 +201,7 @@ public static partial class InterfaceApp
 
     public static void LoadDataFromDataList(List<Data> data)
     {
-        if (State != STATE.Waiting)
+        if (State is STATE.Running or STATE.Stopped or STATE.Error)
             throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
 
         NeuronApp.LoadDataFromDataList(data);
