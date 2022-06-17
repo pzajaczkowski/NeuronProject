@@ -286,7 +286,14 @@ public static partial class InterfaceApp
         switch (Mode)
         {
             case MODE.Error:
-                SolveWithMaxError();
+                if (!SolveWithMaxError())
+                {
+                    State = STATE.Stopped;
+                    ErrorMessage = $"Nie udało się znaleźć rozwiązania po {Iteration} iteracjach";
+                    State = STATE.Error;
+                    return;
+                }
+
                 break;
             case MODE.Iterations:
                 SolveWithIterationStep();
@@ -295,16 +302,21 @@ public static partial class InterfaceApp
                 throw new Exception("how?");
         }
 
-        if (AvgError > 0)
-            State = STATE.Stopped;
-
-        State = STATE.Finished;
+        State = AvgError > 0 ? STATE.Stopped : STATE.Finished;
     }
 
-    private static void SolveWithMaxError()
+    private static bool SolveWithMaxError()
     {
+        ulong it = 0;
         while (NeuronApp.CalculateWithAvgError() > MaxError)
+        {
             NeuronApp.Learn();
+
+            if (++it == 100000)
+                return false;
+        }
+
+        return true;
     }
 
     private static void SolveWithIterationStep()

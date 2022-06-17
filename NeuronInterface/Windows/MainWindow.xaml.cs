@@ -254,7 +254,7 @@ public partial class MainWindow : Window
             ErrorMessage.Content = InterfaceApp.ErrorMessage;
             return;
         }
-            
+
         ErrorMessage.Content = string.Empty;
 
         var culture = CultureInfo.GetCultureInfo("en-US");
