@@ -21,6 +21,8 @@ namespace NeuronInterface.Windows
     /// </summary>
     public partial class ErrorWindow : Window
     {
+        public bool TrueClose = false;
+
         public ErrorWindow()
         {
             InitializeComponent();
@@ -44,6 +46,7 @@ namespace NeuronInterface.Windows
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            if (TrueClose) return;
             e.Cancel = true;
             this.Hide();
         }

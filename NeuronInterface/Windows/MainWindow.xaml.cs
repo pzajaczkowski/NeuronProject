@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -309,5 +310,11 @@ public partial class MainWindow : Window
     private void ErrorGraph_Click(object sender, RoutedEventArgs e)
     {
         _errorWindow.Show();
+    }
+
+    private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        _errorWindow.TrueClose = true;
+        _errorWindow.Close();
     }
 }
