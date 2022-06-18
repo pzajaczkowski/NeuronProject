@@ -409,7 +409,7 @@ public partial class InterfaceApp
 
         bool IterationStop(ulong it)
         {
-            return !_stop && it < IterationStep;
+            return !_stop && it < IterationStep && MaxError < AvgError;
         }
 
         bool ErrorStop(ulong it)
