@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using NeuronProject;
 using Newtonsoft.Json;
 using JsonException = System.Text.Json.JsonException;
@@ -178,11 +179,6 @@ public partial class InterfaceApp
         NeuronApp.ClearData();
     }
 
-    public void Stop()
-    {
-        State = STATE.Stopped;
-    }
-
     /// <summary>
     ///     Odnajduje dwa punkty, które oznaczają linię, która oddziela zbiory punktów.
     /// </summary>
@@ -226,63 +222,16 @@ public partial class InterfaceApp
         State = STATE.Stopped;
     }
 
-    /// <summary>
-    ///     Wykonuje nauczanie do osiągnięcia podanego warunku zatrzymania.
-    /// </summary>
-    public void Solve()
-    {
-        State = STATE.Running;
-        if (Neuron == NEURON.Adaline)
-        {
-            var neuron = (AdalineNeuron)NeuronApp.Neuron;
-            neuron.LearningRate = LearningRate;
-        }
-
-        switch (Mode)
-        {
-            case MODE.Error:
-                if (!SolveWithMaxError())
-                {
-                    State = STATE.Stopped;
-                    ErrorMessage = $"Nie udało się znaleźć rozwiązania po {Iteration} iteracjach";
-                    State = STATE.Error;
-                    return;
-                }
-
-                break;
-            case MODE.Iterations:
-                SolveWithIterationStep();
-                break;
-            default:
-                throw new Exception("how?");
-        }
-
-        State = AvgError > 0 ? STATE.Stopped : STATE.Finished;
-    }
-
-    private bool SolveWithMaxError()
-    {
-        ulong it = 0;
-        while (NeuronApp.CalculateWithAvgError() > MaxError)
-        {
-            NeuronApp.Learn();
-
-            if (++it == 100000)
-                return false;
-        }
-
-        return true;
-    }
-
-    private void SolveWithIterationStep()
-    {
-        for (ulong i = 0; i < IterationStep; i++)
-            NeuronApp.Learn();
-    }
-
     public void Reset()
     {
         NeuronApp.Reset(Neuron == NEURON.Perceptron ? new PerceptronNeuron() : new AdalineNeuron());
+
+        if (Data.Count == 0)
+        {
+            State = STATE.Empty;
+            return;
+        }
+
         State = STATE.Waiting;
     }
 
@@ -429,6 +378,68 @@ public partial class InterfaceApp
         }
 
         State = STATE.Waiting;
+    }
+}
+
+public partial class InterfaceApp
+{
+    private bool _stop;
+
+    private void Step()
+    {
+        NeuronApp.Learn();
+    }
+
+    public void Stop()
+    {
+        _stop = true;
+    }
+
+    /// <summary>
+    ///     Wykonuje nauczanie do osiągnięcia podanego warunku zatrzymania.
+    /// </summary>
+    public async void SolveAsync(Action<IList<Data>> plotter)
+    {
+        State = STATE.Running;
+        if (Neuron == NEURON.Adaline)
+        {
+            var neuron = (AdalineNeuron)NeuronApp.Neuron;
+            neuron.LearningRate = LearningRate;
+        }
+
+        bool IterationStop(ulong it)
+        {
+            return !_stop && it < IterationStep;
+        }
+
+        bool ErrorStop(ulong it)
+        {
+            return it == 0 || (!_stop && MaxError < AvgError && it % 100000 != 0);
+        }
+
+        Func<ulong, bool> condition = Mode switch
+        {
+            MODE.Error => ErrorStop,
+            MODE.Iterations => IterationStop,
+            _ => throw new Exception("how?")
+        };
+
+        ulong it = 0;
+        while (condition(it++))
+        {
+            await Task.Run(Step);
+
+            if (it % 100 == 0)
+                plotter(Data);
+        }
+
+        _stop = false;
+        State = STATE.Stopped;
+
+        if (AvgError > 0)
+            ErrorMessage = $"Nie znaleziono rozwązania po {Iteration} iteracjach";
+
+        State = AvgError > 0 ? STATE.Error : STATE.Finished;
     }
 }
 
