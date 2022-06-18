@@ -1,54 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Color = System.Drawing.Color;
 
-namespace NeuronInterface.Windows
+namespace NeuronInterface.Windows;
+
+/// <summary>
+///     Interaction logic for ErrorWindow.xaml
+/// </summary>
+public partial class ErrorWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for ErrorWindow.xaml
-    /// </summary>
-    public partial class ErrorWindow : Window
+    private readonly InterfaceApp _interfaceApp;
+    public bool TrueClose = false;
+
+    public ErrorWindow(InterfaceApp interfaceApp)
     {
-        public bool TrueClose = false;
+        _interfaceApp = interfaceApp;
+        InitializeComponent();
+    }
 
-        public ErrorWindow()
+    public void UpdateErrorPlot()
+    {
+        var errorList = _interfaceApp.AvgErrorList;
+        if (errorList.Count == 0)
         {
-            InitializeComponent();
-        }
-
-        public void UpdateErrorPlot()
-        {
-            IList<decimal> errorList = InterfaceApp.AvgErrorList;
-            if (errorList.Count == 0)
-            {
-                ErrorPlot.Plot.Clear();
-                ErrorPlot.Refresh();
-                return;
-            }
-            var xy = errorList.Select(Convert.ToDouble).ToArray();
-            var xs = Enumerable.Range(0, xy.Length).Select(Convert.ToDouble).ToArray();
             ErrorPlot.Plot.Clear();
-            ErrorPlot.Plot.AddScatter(xs, xy, Color.Orange);
             ErrorPlot.Refresh();
+            return;
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            if (TrueClose) return;
-            e.Cancel = true;
-            this.Hide();
-        }
+        var xy = errorList.Select(Convert.ToDouble).ToArray();
+        var xs = Enumerable.Range(0, xy.Length).Select(Convert.ToDouble).ToArray();
+        ErrorPlot.Plot.Clear();
+        ErrorPlot.Plot.AddScatter(xs, xy, Color.Orange);
+        ErrorPlot.Refresh();
+    }
+
+    private void Window_Closing(object sender, CancelEventArgs e)
+    {
+        if (TrueClose) return;
+        e.Cancel = true;
+        Hide();
     }
 }

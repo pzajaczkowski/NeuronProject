@@ -17,12 +17,15 @@ namespace NeuronInterface.Windows;
 public partial class MainWindow : Window
 {
     private readonly ErrorWindow _errorWindow;
+    private readonly InterfaceApp _interfaceApp;
 
     public MainWindow()
     {
+        _interfaceApp = new InterfaceApp();
+
         InitializeComponent();
-        InterfaceApp.StateChangedEvent += StateChangedEvent;
-        _errorWindow = new ErrorWindow();
+        _interfaceApp.StateChangedEvent += StateChangedEvent;
+        _errorWindow = new ErrorWindow(_interfaceApp);
     }
 
     private void PositiveNumber(object sender, TextCompositionEventArgs e)
@@ -37,9 +40,9 @@ public partial class MainWindow : Window
                 out var learningRate))
             throw new Exception();
 
-        InterfaceApp.LearningRate = learningRate;
+        _interfaceApp.LearningRate = learningRate;
 
-        switch (InterfaceApp.Mode)
+        switch (_interfaceApp.Mode)
         {
             case InterfaceApp.MODE.Error:
             {
@@ -47,7 +50,7 @@ public partial class MainWindow : Window
                         CultureInfo.GetCultureInfo("en-US"), out var maxError))
                     throw new Exception();
 
-                InterfaceApp.MaxError = maxError;
+                _interfaceApp.MaxError = maxError;
                 break;
             }
             case InterfaceApp.MODE.Iterations:
@@ -55,7 +58,7 @@ public partial class MainWindow : Window
                 if (!ulong.TryParse(StopConditionTextBox.Text, out var iterationStep))
                     throw new Exception();
 
-                InterfaceApp.IterationStep = iterationStep;
+                _interfaceApp.IterationStep = iterationStep;
                 break;
             }
 
@@ -66,7 +69,7 @@ public partial class MainWindow : Window
 
     private void EditData_Click(object sender, RoutedEventArgs e)
     {
-        var dataWindow = new DataWindow();
+        var dataWindow = new DataWindow(_interfaceApp);
         dataWindow.Owner = this;
         dataWindow.ShowDialog();
     }
@@ -75,18 +78,20 @@ public partial class MainWindow : Window
     {
         var item = (ComboBoxItem)e.AddedItems[0];
 
-        if (LearningRate != null && MessageBox.Show("Zmiana neuronu powoduje usunięcie danych.\n Czy chcesz kontynuować?", "Uwaga!",MessageBoxButton.YesNo) == MessageBoxResult.No) return;
+        if (LearningRate != null &&
+            MessageBox.Show("Zmiana neuronu powoduje usunięcie danych.\n Czy chcesz kontynuować?", "Uwaga!",
+                MessageBoxButton.YesNo) == MessageBoxResult.No) return;
 
-            if (item.Content.Equals("Perceptron") && LearningRate != null)
+        if (item.Content.Equals("Perceptron") && LearningRate != null)
         {
-            InterfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
+            _interfaceApp.Neuron = InterfaceApp.NEURON.Perceptron;
             LearningRate.Visibility = Visibility.Hidden;
             LearningRateLabel.Visibility = Visibility.Hidden;
         }
 
         if (item.Content.Equals("Adaline") && LearningRate != null)
         {
-            InterfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
+            _interfaceApp.Neuron = InterfaceApp.NEURON.Adaline;
             LearningRate.Visibility = Visibility.Visible;
             LearningRateLabel.Visibility = Visibility.Visible;
         }
@@ -97,16 +102,16 @@ public partial class MainWindow : Window
         var item = (ComboBoxItem)e.AddedItems[0];
 
         if (item.Content.Equals("Próg błędu"))
-            InterfaceApp.Mode = InterfaceApp.MODE.Error;
+            _interfaceApp.Mode = InterfaceApp.MODE.Error;
 
         if (item.Content.Equals("Ilość iteracji"))
-            InterfaceApp.Mode = InterfaceApp.MODE.Iterations;
+            _interfaceApp.Mode = InterfaceApp.MODE.Iterations;
     }
 
     private void Solve_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        InterfaceApp.Solve();
+        _interfaceApp.Solve();
         Plot();
     }
 
@@ -118,13 +123,13 @@ public partial class MainWindow : Window
             Title = "Wczytaj dane"
         };
         openFileDialog.ShowDialog();
-        InterfaceApp.LoadDataFromFile(openFileDialog.FileName);
+        _interfaceApp.LoadDataFromFile(openFileDialog.FileName);
     }
 
     private void NextStep_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        InterfaceApp.SolveStep();
+        _interfaceApp.SolveStep();
 
         UpdateText();
         Plot();
@@ -134,7 +139,7 @@ public partial class MainWindow : Window
     {
         MainPlot.Plot.Clear();
 
-        var data = InterfaceApp.Data;
+        var data = _interfaceApp.Data;
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
         var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
         var input1b = inputsb.Select(x => (double)x[0]).ToArray();
@@ -147,20 +152,20 @@ public partial class MainWindow : Window
         if (input1r.Length == input2r.Length && input1r.Length > 0)
             MainPlot.Plot.AddScatter(input1r, input2r, Color.Red, 0);
 
-        var ((x, y), (x1, y1)) = InterfaceApp.GetLine();
+        var ((x, y), (x1, y1)) = _interfaceApp.GetLine();
         MainPlot.Plot.AddLine(x, y, x1, y1, Color.Green);
         MainPlot.Refresh();
     }
 
     private void StopSolve_Click(object sender, RoutedEventArgs e)
     {
-        InterfaceApp.Stop();
+        _interfaceApp.Stop();
     }
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        InterfaceApp.Reset();
+        _interfaceApp.Reset();
         UpdateText();
         MainPlot.Plot.Clear();
         MainPlot.Refresh();
@@ -255,33 +260,34 @@ public partial class MainWindow : Window
 
     private void UpdateText()
     {
-        if (InterfaceApp.State == InterfaceApp.STATE.Error)
+        if (_interfaceApp.State == InterfaceApp.STATE.Error)
         {
-            ErrorMessage.Content = InterfaceApp.ErrorMessage;
+            ErrorMessage.Content = _interfaceApp.ErrorMessage;
             return;
         }
 
         ErrorMessage.Content = string.Empty;
 
         var culture = CultureInfo.GetCultureInfo("en-US");
-        NeuronType.SelectedIndex = (int)InterfaceApp.Neuron;
+        NeuronType.SelectedIndex = (int)_interfaceApp.Neuron;
 
-        StopConditionTextBox.Text = InterfaceApp.Mode == InterfaceApp.MODE.Error
-            ? InterfaceApp.MaxError.ToString(culture)
-            : InterfaceApp.IterationStep.ToString();
-        Iteration.Text = InterfaceApp.Iteration.ToString();
+        StopConditionTextBox.Text = _interfaceApp.Mode == InterfaceApp.MODE.Error
+            ? _interfaceApp.MaxError.ToString(culture)
+            : _interfaceApp.IterationStep.ToString();
+        Iteration.Text = _interfaceApp.Iteration.ToString();
 
-        if (InterfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
-            LearningRate.Text = InterfaceApp.LearningRate.ToString(culture);
+        if (_interfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
+            LearningRate.Text = _interfaceApp.LearningRate.ToString(culture);
 
-        Iteration.Text = InterfaceApp.Iteration.ToString();
+        Iteration.Text = _interfaceApp.Iteration.ToString();
 
-        if (InterfaceApp.State == InterfaceApp.STATE.Empty)
+        if (_interfaceApp.State == InterfaceApp.STATE.Empty)
         {
             CurrentError.Text = "-";
             return;
         }
-        CurrentError.Text = InterfaceApp.AvgError.ToString(culture);
+
+        CurrentError.Text = _interfaceApp.AvgError.ToString(culture);
 
         _errorWindow.UpdateErrorPlot();
         Plot();
@@ -297,7 +303,7 @@ public partial class MainWindow : Window
         FileDialog.ShowDialog();
 
         Initialize();
-        InterfaceApp.SaveToJson(FileDialog.FileName);
+        _interfaceApp.SaveToJson(FileDialog.FileName);
     }
 
     private void Load_Click(object sender, RoutedEventArgs e)
@@ -308,7 +314,7 @@ public partial class MainWindow : Window
             Title = "Wczytaj dane"
         };
         FileDialog.ShowDialog();
-        InterfaceApp.LoadFromJson(FileDialog.FileName);
+        _interfaceApp.LoadFromJson(FileDialog.FileName);
 
         UpdateText();
     }

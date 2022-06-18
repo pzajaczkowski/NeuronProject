@@ -14,18 +14,13 @@ namespace NeuronInterface.Windows;
 /// </summary>
 public partial class DataWindow : Window
 {
-    //tymczasowe rozwiazanie
-    private class DataItem
-    {
-        public string Input1 { get; init; }
-        public string Input2 { get; init; }
-        public string Output { get; init; }
-    }
+    private readonly InterfaceApp _interfaceApp;
 
     private ObservableCollection<DataItem> _dataGridCollection;
 
-    public DataWindow()
+    public DataWindow(InterfaceApp interfaceApp)
     {
+        _interfaceApp = interfaceApp;
         InitializeComponent();
         CreateDataGridData();
     }
@@ -34,7 +29,7 @@ public partial class DataWindow : Window
     {
         _dataGridCollection = new ObservableCollection<DataItem>();
 
-        foreach (var data in InterfaceApp.Data)
+        foreach (var data in _interfaceApp.Data)
         {
             var item = new DataItem
             {
@@ -97,7 +92,7 @@ public partial class DataWindow : Window
             }
         }
 
-        InterfaceApp.LoadDataFromDataList(datalist);
+        _interfaceApp.LoadDataFromDataList(datalist);
         Close();
     }
 
@@ -105,5 +100,13 @@ public partial class DataWindow : Window
     {
         var regex = new Regex("[^0-9,-]+");
         e.Handled = regex.IsMatch(e.Text);
+    }
+
+    //tymczasowe rozwiazanie
+    private class DataItem
+    {
+        public string Input1 { get; init; }
+        public string Input2 { get; init; }
+        public string Output { get; init; }
     }
 }
