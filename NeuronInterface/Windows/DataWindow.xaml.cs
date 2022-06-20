@@ -92,8 +92,18 @@ public partial class DataWindow : Window
             }
         }
 
-        _interfaceApp.LoadDataFromDataList(datalist);
-        Close();
+        try
+        {
+            _interfaceApp.LoadDataFromDataList(datalist);
+        }
+        catch (Exception ex)
+        {
+            if (ex is not (NeuronApp.PerceptronDataException or NeuronApp.AdalineDataException))
+                throw;
+
+            MessageBox.Show("Błędnie wpisane dane!");
+            Close();
+        }
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
