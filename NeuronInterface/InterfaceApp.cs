@@ -240,7 +240,11 @@ public partial class InterfaceApp
         if (State is STATE.Running or STATE.Stopped or STATE.Error)
             throw new Exception("Nie można wczytać danych w czasie działania aplikacji"); // xd
 
+        if (data.Count == 0)
+            return;
+
         NeuronApp.LoadDataFromDataList(data);
+        State = STATE.Waiting;
     }
 
     public void LoadDataFromFile(string path)
@@ -253,6 +257,7 @@ public partial class InterfaceApp
         }
         catch (FileNotFoundException)
         {
+            return;
         }
         catch (JsonException e)
         {
@@ -288,6 +293,7 @@ public partial class InterfaceApp
         }
 
         _loadingTry = 0;
+        State = STATE.Waiting;
     }
 
     /// <summary>
@@ -365,19 +371,14 @@ public partial class InterfaceApp
             return;
         }
 
-        if (AvgError == 0)
-        {
+        if (Data.Count == 0)
+            State = STATE.Empty;
+        else if (AvgError == 0)
             State = STATE.Finished;
-            return;
-        }
-
-        if (Iteration > 0)
-        {
+        else if (Iteration > 0)
             State = STATE.Stopped;
-            return;
-        }
-
-        State = STATE.Waiting;
+        else
+            State = STATE.Waiting;
     }
 }
 
