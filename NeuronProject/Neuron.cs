@@ -24,7 +24,6 @@ public abstract class Neuron
     {
         if (Weights.Count != Inputs.Count || !Weights.Any())
             SetRandomWeights();
-        //throw new Exception("Weights.Count() != Inputs.Count() || !Weights.Any()");
 
         decimal sum = 0;
 

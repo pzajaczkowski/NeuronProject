@@ -27,6 +27,7 @@ public class NeuronApp
     public IList<Data> Results => _results.AsReadOnly();
     public IList<decimal> AvgErrorList => _error.AsReadOnly();
     public decimal CurrentAvgError => _error.Count > 0 ? _error.Last() : CalculateWithAvgError();
+    public ulong Iterations { get; private set; }
 
     public void ClearData()
     {
@@ -34,8 +35,7 @@ public class NeuronApp
         _error.Clear();
         _results.Clear();
         Iterations = 0;
-    } 
-    public ulong Iterations { get; private set; }
+    }
 
     public void LoadDataFromDataList(List<Data> data)
     {
@@ -74,6 +74,9 @@ public class NeuronApp
         _data.Add(data);
     }
 
+    /// <summary>
+    ///     Obliczenie wyników dla wszystkich danych.
+    /// </summary>
     public void Calculate()
     {
         _results.Clear();
@@ -90,7 +93,7 @@ public class NeuronApp
         }
     }
 
-    public decimal CalculateWithAvgError()
+    private decimal CalculateWithAvgError()
     {
         Calculate();
 
