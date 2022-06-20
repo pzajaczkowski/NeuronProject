@@ -13,8 +13,15 @@ public class AdalineNeuron : Neuron
     {
         var result = Calculate();
 
-        for (var i = 0; i < Weights.Count; i++) Weights[i] += LearningRate * (ExpectedOutput - result) * Inputs[i];
+        if (result == ExpectedOutput)
+            return;
 
-        Bias += LearningRate * (ExpectedOutput - result);
+        var sum = Weights[0] * Inputs[0] + Weights[1] * Inputs[1] + Bias;
+
+        //for (var i = 0; i < Weights.Count; i++) Weights[i] += LearningRate * (ExpectedOutput - result) * Inputs[i];
+        for (var i = 0; i < Weights.Count; i++) Weights[i] += LearningRate * (ExpectedOutput - sum) * Inputs[i];
+
+        //Bias += LearningRate * (ExpectedOutput - result);
+        Bias += LearningRate * (ExpectedOutput - sum);
     }
 }
