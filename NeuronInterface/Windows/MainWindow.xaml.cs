@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Win32;
 using NeuronProject;
+using Color = System.Drawing.Color;
 
 namespace NeuronInterface.Windows;
 
@@ -38,11 +39,9 @@ public partial class MainWindow : Window
 
     private void Initialize()
     {
-        if (!decimal.TryParse(LearningRate.Text, NumberStyles.AllowDecimalPoint, CultureInfo.GetCultureInfo("en-US"),
+        if (decimal.TryParse(LearningRate.Text, NumberStyles.AllowDecimalPoint, CultureInfo.GetCultureInfo("en-US"),
                 out var learningRate))
-            throw new Exception();
-
-        _interfaceApp.LearningRate = learningRate;
+            _interfaceApp.LearningRate = learningRate;
 
         switch (_interfaceApp.Mode)
         {
@@ -262,13 +261,20 @@ public partial class MainWindow : Window
 
     private void UpdateTextAndPlot()
     {
-        if (_interfaceApp.State == InterfaceApp.STATE.Error)
+        switch (_interfaceApp.State)
         {
-            ErrorMessage.Content = _interfaceApp.ErrorMessage;
-            return;
+            case InterfaceApp.STATE.Error:
+                ErrorMessage.Content = _interfaceApp.ErrorMessage;
+                ErrorMessage.Foreground = new SolidColorBrush(new System.Windows.Media.Color { A = 255, R = 255 });
+                return;
+            case InterfaceApp.STATE.Finished:
+                ErrorMessage.Content = "Znalezione rozwiązanie";
+                ErrorMessage.Foreground = new SolidColorBrush(new System.Windows.Media.Color { A = 255, G = 255 });
+                break;
+            default:
+                ErrorMessage.Content = string.Empty;
+                break;
         }
-
-        ErrorMessage.Content = string.Empty;
 
         var culture = CultureInfo.GetCultureInfo("en-US");
         NeuronType.SelectedIndex = (int)_interfaceApp.Neuron;
@@ -276,6 +282,7 @@ public partial class MainWindow : Window
         StopConditionTextBox.Text = _interfaceApp.Mode == InterfaceApp.MODE.Error
             ? _interfaceApp.MaxError.ToString(culture)
             : _interfaceApp.IterationStep.ToString();
+
         Iteration.Text = _interfaceApp.Iteration.ToString();
 
         if (_interfaceApp.Neuron == InterfaceApp.NEURON.Adaline)
