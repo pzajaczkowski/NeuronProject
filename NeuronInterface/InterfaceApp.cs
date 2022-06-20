@@ -72,6 +72,8 @@ public partial class InterfaceApp
         Finished
     }
 
+    private decimal _learningRate = new(.1);
+
     /// <summary>
     ///     Używane do automatycznego rozpoznawania typu neuronu podczas wczytywania danych.
     /// </summary>
@@ -151,7 +153,20 @@ public partial class InterfaceApp
     /// </summary>
     public ulong IterationStep { get; set; }
 
-    public decimal LearningRate { get; set; } = new(.1);
+    public decimal LearningRate
+    {
+        get => _learningRate;
+        set
+        {
+            _learningRate = value switch
+            {
+                > 1 => 1,
+                < 0 => new decimal(0.01),
+                _ => value
+            };
+        }
+    }
+
     private NeuronApp NeuronApp { get; set; } = new() { Neuron = new PerceptronNeuron() };
 
     /// <summary>
@@ -437,10 +452,13 @@ public partial class InterfaceApp
         _stop = false;
         State = STATE.Stopped;
 
-        if (AvgError > 0)
+        if (AvgError > MaxError)
+        {
             ErrorMessage = $"Nie znaleziono rozwązania po {Iteration} iteracjach";
-
-        State = AvgError > 0 ? STATE.Error : STATE.Finished;
+            State = STATE.Error;
+        }
+        else
+            State = STATE.Finished;
     }
 }
 
