@@ -37,6 +37,9 @@ public partial class MainWindow : Window
         e.Handled = !regex.IsMatch(e.Text);
     }
 
+    /// <summary>
+    ///     Wczytanie wszystkich danych ustawionych w interfejsie do aplikacji.
+    /// </summary>
     private void Initialize()
     {
         if (decimal.TryParse(LearningRate.Text, NumberStyles.AllowDecimalPoint, CultureInfo.GetCultureInfo("en-US"),
