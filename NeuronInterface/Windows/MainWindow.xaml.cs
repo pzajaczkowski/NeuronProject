@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
@@ -8,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using NeuronProject;
 
 namespace NeuronInterface.Windows;
 
@@ -69,8 +71,7 @@ public partial class MainWindow : Window
 
     private void EditData_Click(object sender, RoutedEventArgs e)
     {
-        var dataWindow = new DataWindow(_interfaceApp);
-        dataWindow.Owner = this;
+        var dataWindow = new DataWindow(_interfaceApp) { Owner = this };
         dataWindow.ShowDialog();
     }
 
@@ -111,8 +112,16 @@ public partial class MainWindow : Window
     private void Solve_Click(object sender, RoutedEventArgs e)
     {
         Initialize();
-        _interfaceApp.Solve();
-        Plot();
+        _interfaceApp.SolveAsync(Updater);
+    }
+
+    private void Updater(IList<Data> data)
+    {
+        Plot(data);
+        _errorWindow.UpdateErrorPlot();
+
+        Iteration.Text = _interfaceApp.Iteration.ToString();
+        CurrentError.Text = _interfaceApp.AvgError.ToString(CultureInfo.GetCultureInfo("en-US"));
     }
 
     private void LoadData_Click(object sender, RoutedEventArgs e)
@@ -130,16 +139,12 @@ public partial class MainWindow : Window
     {
         Initialize();
         _interfaceApp.SolveStep();
-
-        UpdateText();
-        Plot();
     }
 
-    private void Plot()
+    private void Plot(IList<Data> data)
     {
         MainPlot.Plot.Clear();
 
-        var data = _interfaceApp.Data;
         var inputsb = data.Where(x => x.Output == 1).Select(x => x.Input);
         var inputsr = data.Where(x => x.Output != 1).Select(x => x.Input);
         var input1b = inputsb.Select(x => (double)x[0]).ToArray();
@@ -164,16 +169,13 @@ public partial class MainWindow : Window
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
-        Initialize();
         _interfaceApp.Reset();
-        UpdateText();
-        MainPlot.Plot.Clear();
-        MainPlot.Refresh();
     }
 
     private void StateChangedEvent(object? sender, InterfaceApp.STATE e)
     {
-        UpdateText();
+        UpdateTextAndPlot();
+
         switch (e)
         {
             case InterfaceApp.STATE.Empty:
@@ -258,7 +260,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void UpdateText()
+    private void UpdateTextAndPlot()
     {
         if (_interfaceApp.State == InterfaceApp.STATE.Error)
         {
@@ -290,7 +292,7 @@ public partial class MainWindow : Window
         CurrentError.Text = _interfaceApp.AvgError.ToString(culture);
 
         _errorWindow.UpdateErrorPlot();
-        Plot();
+        Plot(_interfaceApp.Data);
     }
 
     private void SaveAndExit_Click(object sender, RoutedEventArgs e)
@@ -315,8 +317,6 @@ public partial class MainWindow : Window
         };
         FileDialog.ShowDialog();
         _interfaceApp.LoadFromJson(FileDialog.FileName);
-
-        UpdateText();
     }
 
     private void ErrorGraph_Click(object sender, RoutedEventArgs e)
